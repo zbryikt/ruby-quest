@@ -1,0 +1,11 @@
+extends /base.pug
+block vars
+  - assets = function(path) { return "assets/pack/devil-workshop/3D/png/" + path; }
+block head
+block body
+  .tile.d-none(ld="sample") #[.b]#[.e]#[.t]#[.s]
+  .w-100.h-100.d-flex.justify-content-center.align-items-center
+    .field(ld="field")
+      .player(ld="player")
+block script
+  +script("/js/index.js")
