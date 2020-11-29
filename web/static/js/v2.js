@@ -1,12 +1,21 @@
-var stage, s;
+var cp, stage, s;
+cp = function(it){
+  return JSON.parse(JSON.stringify(it));
+};
 stage = function(){
   this.data = {};
   this.dim = {};
   this.user = {
     item: []
   };
+  this.cursor = {
+    key: 'c'
+  };
   this.lv = 0;
+  this.loader = {};
   this.ldcv = {};
+  this.snd = {};
+  this.mode = 'play';
   return this;
 };
 stage.dim = {
@@ -102,6 +111,7 @@ stage.tileinfo = {
 };
 stage.prototype = import$(Object.create(Object.prototype), {
   restart: function(){
+    this.user.score = this.user.startScore;
     return this.load({
       lv: this.lv
     });
@@ -112,9 +122,31 @@ stage.prototype = import$(Object.create(Object.prototype), {
       lv: 1
     });
   },
+  sndPlay: function(n){
+    this.snd[n].currentTime = 0;
+    return this.snd[n].play();
+  },
+  setMode: function(mode){
+    mode == null && (mode = 'edit');
+    if (mode === 'edit') {
+      if (this.editData) {
+        this.data = cp(this.editData);
+        this.tiles = this.data.tiles;
+        this.users = this.data.users;
+      }
+      this.mode = 'edit';
+      return this.render();
+    } else {
+      this.editData = cp(this.data);
+      import$(this.user, this.data.user);
+      this.mode = 'play';
+      return this.render();
+    }
+  },
   init: function(){
     var view, this$ = this;
     this.view = view = new ldView({
+      initRender: false,
       root: document.body,
       init: {
         finish: function(arg$){
@@ -123,6 +155,11 @@ stage.prototype = import$(Object.create(Object.prototype), {
           return this$.ldcv.finish = new ldCover({
             root: node
           });
+        },
+        picked: function(arg$){
+          var node;
+          node = arg$.node;
+          return node.appendChild(this$.el.sampleTile.cloneNode(true));
         }
       },
       text: {
@@ -134,21 +171,126 @@ stage.prototype = import$(Object.create(Object.prototype), {
         }
       },
       handler: {
+        "on-mode": function(arg$){
+          var node, mode;
+          node = arg$.node;
+          mode = node.getAttribute('data-mode');
+          return node.classList.toggle('d-none', mode !== this$.mode);
+        },
         "sample-tile": function(){},
         field: function(){},
         user: function(){},
+        cursor: function(){},
         scene: function(){},
         lv: function(){},
-        score: function(){}
+        score: function(){},
+        picked: function(arg$){
+          var node;
+          node = arg$.node;
+          return node.childNodes[0].setAttribute('class', (['tile'].concat([stage.tileinfo[this$.cursor.key].name])).join(' '));
+        }
       },
       action: {
         click: {
+          "go-edit": function(){
+            return this$.setMode('edit');
+          },
+          "test-run": function(){
+            return this$.setMode('play');
+          },
+          "download": function(){
+            var href, n;
+            href = URL.createObjectURL(new Blob([JSON.stringify(this$.data)], {
+              type: 'application/json'
+            }));
+            n = ld$.create({
+              name: 'a',
+              attr: {
+                href: href,
+                download: 'result.json'
+              }
+            });
+            document.body.appendChild(n);
+            n.click();
+            return document.body.removeChild(n);
+          },
           restart: function(){
             return this$.restart();
           },
           reset: function(){
             this$.ldcv.finish.toggle(false);
             return this$.reset();
+          },
+          ext: function(arg$){
+            var node, type, ref$;
+            node = arg$.node;
+            type = +node.getAttribute('data-type');
+            if (type === 0) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(0, 0, cp(it[0]));
+                });
+              });
+            }
+            if (type === 1) {
+              this$.tiles.map(function(it){
+                return it.splice(0, 0, cp(it[0]));
+              });
+            }
+            if (type === 2) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(it.length, 0, cp(it[it.length - 1]));
+                });
+              });
+            }
+            if (type === 3) {
+              this$.tiles.map(function(it){
+                return it.splice(it.length, 0, cp(it[it.length - 1]));
+              });
+            }
+            if (type === 4) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(0, 1);
+                });
+              });
+            }
+            if (type === 5) {
+              this$.tiles.map(function(it){
+                return it.splice(0, 1);
+              });
+            }
+            if (type === 6) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(it.length - 1, 1);
+                });
+              });
+            }
+            if (type === 7) {
+              this$.tiles.map(function(it){
+                return it.splice(it.length - 1, 1);
+              });
+            }
+            if (type === 8) {
+              this$.tiles.splice(this$.tiles.length, 0, (ref$ = this$.tiles)[ref$.length - 1].map(function(it){
+                return it.map(function(){
+                  return 'a';
+                });
+              }));
+            }
+            if (type === 9) {
+              this$.tiles.splice(0, 0, cp(this$.tiles[0]));
+            }
+            if (type === 10 && this$.tiles.length > 1) {
+              this$.tiles.splice(this$.tiles.length - 1, 1);
+            }
+            if (type === 11 && this$.tiles.length > 1) {
+              this$.tiles.splice(0, 1);
+            }
+            this$.prepare();
+            return this$.render();
           }
         }
       }
@@ -158,44 +300,116 @@ stage.prototype = import$(Object.create(Object.prototype), {
       scene: view.get('scene'),
       field: view.get('field'),
       user: view.get('user'),
+      cursor: view.get('cursor'),
+      picked: view.get('picked'),
       bgm: view.get('bgm')
     };
     this.el.sampleTile.classList.remove('d-none');
+    this.view.render();
+    this.snd.get = new Audio('/assets/snd/get.ogg');
+    this.snd.pass = new Audio('/assets/snd/pass.ogg');
+    this.snd.key = new Audio('/assets/snd/key.ogg');
+    this.snd.push = new Audio('/assets/snd/push.ogg');
+    this.snd.hit = new Audio('/assets/snd/hit.ogg');
     requestAnimationFrame(function(t){
       return this$.firekey(t);
     });
     document.addEventListener('keyup', function(e){
-      var u, dir;
-      if (e.which < 37 || e.which > 40) {
+      var keycode, u, dir;
+      keycode = e.which;
+      if (keycode === 32) {
+        this$.cursor.entering = false;
+      }
+      if (keycode < 37 || keycode > 40) {
         return;
       }
       u = this$.user;
-      dir = e.which - 37;
+      dir = keycode - 37;
       if (u.dir === dir) {
         return u.moving = false;
       }
     });
-    document.addEventListener('keydown', function(e){
-      var u, dir;
+    return document.addEventListener('keydown', function(e){
+      var ref$, u, keycode, ref1$, delta, i, j, ks, res$, k, dir;
+      ref$ = [this$.user, e.which], u = ref$[0], keycode = ref$[1];
       if (this$.el.bgm.paused) {
         this$.el.bgm.play();
       }
-      if (e.which < 37 || e.which > 40) {
+      if (keycode === 82 && this$.mode === 'play') {
+        return this$.restart();
+      }
+      if (this$.mode === 'edit') {
+        if (keycode === 80) {
+          ref1$ = this$.data.user;
+          ref1$.x = (ref$ = this$.user).x;
+          ref1$.y = ref$.y;
+          ref1$.f = ref$.f;
+          this$.renderUser();
+        }
+        if (keycode === 83 || keycode === 87) {
+          delta = keycode === 83 ? -1 : 1;
+          u.f = (ref1$ = u.f + delta) > 0 ? ref1$ : 0;
+          if (u.f >= this$.dim.f) {
+            u.f = this$.dim.f - 1;
+          }
+          if (!this$.tiles[u.f]) {
+            this$.tiles[u.f] = (function(){
+              var i$, to$, lresult$, j$, to1$, results$ = [];
+              for (i$ = 0, to$ = this.dim.h; i$ < to$; ++i$) {
+                i = i$;
+                lresult$ = [];
+                for (j$ = 0, to1$ = this.dim.w; j$ < to1$; ++j$) {
+                  j = j$;
+                  lresult$.push('a');
+                }
+                results$.push(lresult$);
+              }
+              return results$;
+            }.call(this$));
+          }
+          this$.render();
+        }
+        if (keycode === 65 || keycode === 68) {
+          res$ = [];
+          for (k in stage.tileinfo) {
+            res$.push(k);
+          }
+          ks = res$;
+          delta = keycode === 65 ? -1 : 1;
+          this$.cursor.key = ks[(ks.indexOf(this$.cursor.key) + delta + ks.length) % ks.length];
+          this$.renderUser();
+        }
+        if (keycode === 8) {
+          this$.tiles[u.f][u.y][u.x] = 'a';
+          this$.render();
+        }
+        if (keycode === 32) {
+          this$.cursor.entering = true;
+          this$.tiles[u.f][u.y][u.x] = this$.cursor.key;
+          this$.render();
+        }
+        if (keycode === 70) {
+          this$.tiles[u.f].map(function(it){
+            var i$, to$, i, results$ = [];
+            for (i$ = 0, to$ = it.length; i$ < to$; ++i$) {
+              i = i$;
+              results$.push(it[i] = this$.cursor.key);
+            }
+            return results$;
+          });
+          this$.render();
+        }
+      }
+      if (keycode < 37 || keycode > 40) {
         return;
       }
-      u = this$.user;
-      dir = e.which - 37;
+      dir = keycode - 37;
       if (u.dir !== dir || !u.moving) {
         u.lastMoveTime = null;
       }
       u.dir = dir;
       u.moving = true;
       return this$.el.user.style.backgroundPositionY = -stage.dim.size * 1.4964 * [2, 1, 3, 0][dir] + "px";
-    });
-    return document.addEventListener('keypress', function(e){
-      if (e.which === 114) {
-        return this$.restart();
-      }
     });
   },
   zIndex: function(arg$){
@@ -204,9 +418,22 @@ stage.prototype = import$(Object.create(Object.prototype), {
     return (f * this.dim.w * this.dim.h + y) * 2 + (p ? 1 : 0);
   },
   renderUser: function(){
-    var ref$, blockSize, blockVp;
+    var ref$, blockSize, blockVp, x, y, f;
     ref$ = [stage.dim.size, stage.dim.vp], blockSize = ref$[0], blockVp = ref$[1];
-    return import$(this.el.user.style, {
+    ref$ = this.mode === 'play'
+      ? this.user
+      : this.data.user, x = ref$.x, y = ref$.y, f = ref$.f;
+    import$(this.el.user.style, {
+      left: x * blockSize + "px",
+      top: (y * blockSize - f * blockVp) + "px",
+      zIndex: this.zIndex({
+        f: f,
+        y: y,
+        x: x,
+        p: 1
+      })
+    });
+    import$(this.el.cursor.style, {
       left: this.user.x * blockSize + "px",
       top: (this.user.y * blockSize - this.user.f * blockVp) + "px",
       zIndex: this.zIndex({
@@ -216,6 +443,8 @@ stage.prototype = import$(Object.create(Object.prototype), {
         p: 1
       })
     });
+    this.el.cursor.style.display = this.mode === 'edit' ? 'block' : 'none';
+    return this.view.render('picked');
   },
   render: function(){
     var ref$, dim, tiles, tileinfo, blockSize, blockVp, sample, field, scene, res$, i$, to$, f, lresult$, j$, to1$, h, lresult1$, k$, to2$, w, n;
@@ -224,7 +453,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
     ref$ = [this.el.sampleTile, this.el.field, this.el.scene], sample = ref$[0], field = ref$[1], scene = ref$[2];
     import$(scene.style, {
       width: dim.w * blockSize + "px",
-      height: (dim.h * blockSize + blockVp * dim.f) + "px"
+      height: (dim.h * blockSize + blockVp) + "px"
     });
     field.innerHTML = "";
     this.nodes = [];
@@ -260,21 +489,63 @@ stage.prototype = import$(Object.create(Object.prototype), {
     this.renderUser();
     return this.view.render();
   },
+  prepare: function(){
+    this.tiles = this.data.tiles;
+    import$(this.user, this.data.user);
+    return import$(this.dim, {
+      f: this.data.tiles.length,
+      h: this.data.tiles[0].length,
+      w: this.data.tiles[0][0].length
+    });
+  },
+  edit: function(){
+    var i, j;
+    this.mode = 'edit';
+    this.data = {
+      user: {
+        x: 0,
+        y: 0,
+        f: 0
+      },
+      tiles: [(function(){
+        var i$, lresult$, j$, results$ = [];
+        for (i$ = 0; i$ < 10; ++i$) {
+          i = i$;
+          lresult$ = [];
+          for (j$ = 0; j$ < 10; ++j$) {
+            j = j$;
+            lresult$.push('a');
+          }
+          results$.push(lresult$);
+        }
+        return results$;
+      }())]
+    };
+    this.prepare();
+    return this.render();
+  },
   load: function(arg$){
-    var lv, this$ = this;
-    lv = arg$.lv;
-    return ld$.fetch("/js/map/" + lv + ".js", {}, {
+    var lv, path, this$ = this;
+    lv = arg$.lv, path = arg$.path;
+    path = path
+      ? path
+      : this.loader.path;
+    this.loader.path = path;
+    return ld$.fetch(path
+      ? path(lv)
+      : "/js/map/" + lv + ".js", {}, {
       type: 'text'
     }).then(function(ret){
-      this$.data = eval(ret);
-      this$.tiles = this$.data.tiles;
-      import$(this$.user, this$.data.user);
+      var e;
+      try {
+        this$.data = JSON.parse(ret);
+      } catch (e$) {
+        e = e$;
+        this$.data = eval(ret);
+      }
       this$.lv = lv;
-      import$(this$.dim, {
-        f: this$.data.tiles.length,
-        h: this$.data.tiles[0].length,
-        w: this$.data.tiles[0][0].length
-      });
+      this$.user.startScore = this$.user.score;
+      this$.prepare();
       return this$.render();
     })['catch'](function(){
       return this$.ldcv.finish.toggle(true);
@@ -377,6 +648,16 @@ stage.prototype.firekey = function(t){
   if (!p) {
     return;
   }
+  if (this.mode === 'edit') {
+    import$(u, pd);
+    if (this.cursor.entering) {
+      this.tiles[u.f][u.y][u.x] = this.cursor.key;
+      this.render();
+    } else {
+      this.renderUser();
+    }
+    return;
+  }
   if (ts[1][0] === 'j' && (tileinfo[ts[1][1]] && tileinfo[ts[1][1]].over) && (!tileinfo[ts[2][1]] || tileinfo[ts[2][1]].through)) {
     u.f = u.f + 1;
     ref$ = prepare(), p = ref$[0], f = ref$[1], ts = ref$[2], p0 = ref$[3], p1 = ref$[4], p2 = ref$[5], pd = ref$[6];
@@ -391,13 +672,15 @@ stage.prototype.firekey = function(t){
       n.parentNode.removeChild(n);
     }
     this.user.score = (this.user.score || 0) + tileinfo[ts[1][1]].score;
+    this.sndPlay('get');
     this.view.render();
   }
   if (ts[1][1] === 'e') {
     if (!((ref$ = ts[1][2]) === 'a' || ref$ === 'f')) {
+      this.sndPlay('hit');
       return;
     }
-    ref$ = !tileinfo[ts[0][2]] || tileinfo[ts[0][2]].fill
+    ref$ = f[0] >= 0 && (!tileinfo[ts[0][2]] || tileinfo[ts[0][2]].fill)
       ? [f[0], 'c']
       : [f[1], 'e'], df = ref$[0], dk = ref$[1];
     this.tiles[f[1]][p1.y][p1.x] = 'a';
@@ -419,9 +702,11 @@ stage.prototype.firekey = function(t){
     }
     this.nodes[df][p2.y][p2.x] = this.nodes[f[1]][p1.y][p1.x];
     this.nodes[f[1]][p1.y][p1.x] = null;
+    this.sndPlay('push');
     applyDefault = false;
   }
   if (ts[1][1] === 'h') {
+    this.sndPlay('key');
     this.transform({
       src: 'g',
       des: 'i'
@@ -434,9 +719,14 @@ stage.prototype.firekey = function(t){
     }
   }
   if (ts[1][1] === 'i') {
-    return this.load({
-      lv: this.lv + 1
-    });
+    this.sndPlay('pass');
+    if (this.editData) {
+      this.setMode('edit');
+    } else {
+      return this.load({
+        lv: this.lv + 1
+      });
+    }
   }
   if (ts[1][1] === 'a' && ts[0][1] === 'j') {
     pd.f = pd.f - 1;
@@ -456,7 +746,10 @@ stage.prototype.firekey = function(t){
 s = new stage();
 s.init();
 s.load({
-  lv: 1
+  lv: 1,
+  path: function(it){
+    return "/assets/map/" + it + ".json";
+  }
 });
 function import$(obj, src){
   var own = {}.hasOwnProperty;
