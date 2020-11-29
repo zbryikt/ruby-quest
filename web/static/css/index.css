@@ -17,9 +17,11 @@ body {
   position: absolute;
   width: 32px;
   height: 44px;
-  background: #fff;
   transition: left 0.1s linear, top 0.1s linear;
   border-radius: 9px;
+  background: url("/assets/img/user.png");
+  background-size: 128px 191.5392px;
+  animation: walking 1s infinite steps(1, end);
 }
 .tile {
   position: absolute;
@@ -162,4 +164,72 @@ body {
 }
 .tile.stair .s {
   opacity: 0;
+}
+@-moz-keyframes walking {
+  0% {
+    background-position-x: 0;
+  }
+  25% {
+    background-position-x: -32px;
+  }
+  50% {
+    background-position-x: -64px;
+  }
+  75% {
+    background-position-x: -96px;
+  }
+  100% {
+    background-position-x: 0px;
+  }
+}
+@-webkit-keyframes walking {
+  0% {
+    background-position-x: 0;
+  }
+  25% {
+    background-position-x: -32px;
+  }
+  50% {
+    background-position-x: -64px;
+  }
+  75% {
+    background-position-x: -96px;
+  }
+  100% {
+    background-position-x: 0px;
+  }
+}
+@-o-keyframes walking {
+  0% {
+    background-position-x: 0;
+  }
+  25% {
+    background-position-x: -32px;
+  }
+  50% {
+    background-position-x: -64px;
+  }
+  75% {
+    background-position-x: -96px;
+  }
+  100% {
+    background-position-x: 0px;
+  }
+}
+@keyframes walking {
+  0% {
+    background-position-x: 0;
+  }
+  25% {
+    background-position-x: -32px;
+  }
+  50% {
+    background-position-x: -64px;
+  }
+  75% {
+    background-position-x: -96px;
+  }
+  100% {
+    background-position-x: 0px;
+  }
 }

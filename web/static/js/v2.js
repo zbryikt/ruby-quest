@@ -5,6 +5,8 @@ stage = function(){
   this.user = {
     item: []
   };
+  this.lv = 0;
+  this.ldcv = {};
   return this;
 };
 stage.dim = {
@@ -94,26 +96,69 @@ stage.tileinfo = {
     through: true,
     over: false,
     fill: false,
-    push: false
+    push: false,
+    score: 10
   }
 };
 stage.prototype = import$(Object.create(Object.prototype), {
+  restart: function(){
+    return this.load({
+      lv: this.lv
+    });
+  },
+  reset: function(){
+    this.user.score = 0;
+    return this.load({
+      lv: 1
+    });
+  },
   init: function(){
     var view, this$ = this;
-    view = new ldView({
+    this.view = view = new ldView({
       root: document.body,
+      init: {
+        finish: function(arg$){
+          var node;
+          node = arg$.node;
+          return this$.ldcv.finish = new ldCover({
+            root: node
+          });
+        }
+      },
+      text: {
+        lv: function(){
+          return this$.lv || 1;
+        },
+        score: function(){
+          return this$.user.score || 0;
+        }
+      },
       handler: {
         "sample-tile": function(){},
         field: function(){},
         user: function(){},
-        scene: function(){}
+        scene: function(){},
+        lv: function(){},
+        score: function(){}
+      },
+      action: {
+        click: {
+          restart: function(){
+            return this$.restart();
+          },
+          reset: function(){
+            this$.ldcv.finish.toggle(false);
+            return this$.reset();
+          }
+        }
       }
     });
     this.el = {
       sampleTile: view.get('sample-tile').cloneNode(true),
       scene: view.get('scene'),
       field: view.get('field'),
-      user: view.get('user')
+      user: view.get('user'),
+      bgm: view.get('bgm')
     };
     this.el.sampleTile.classList.remove('d-none');
     requestAnimationFrame(function(t){
@@ -121,7 +166,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
     });
     document.addEventListener('keyup', function(e){
       var u, dir;
-      if (e.key < 37 || e.key > 40) {
+      if (e.which < 37 || e.which > 40) {
         return;
       }
       u = this$.user;
@@ -130,9 +175,12 @@ stage.prototype = import$(Object.create(Object.prototype), {
         return u.moving = false;
       }
     });
-    return document.addEventListener('keydown', function(e){
+    document.addEventListener('keydown', function(e){
       var u, dir;
-      if (e.key < 37 || e.key > 40) {
+      if (this$.el.bgm.paused) {
+        this$.el.bgm.play();
+      }
+      if (e.which < 37 || e.which > 40) {
         return;
       }
       u = this$.user;
@@ -140,7 +188,14 @@ stage.prototype = import$(Object.create(Object.prototype), {
       if (u.dir !== dir || !u.moving) {
         u.lastMoveTime = null;
       }
-      return u.dir = dir, u.moving = true, u;
+      u.dir = dir;
+      u.moving = true;
+      return this$.el.user.style.backgroundPositionY = -stage.dim.size * 1.4964 * [2, 1, 3, 0][dir] + "px";
+    });
+    return document.addEventListener('keypress', function(e){
+      if (e.which === 114) {
+        return this$.restart();
+      }
     });
   },
   zIndex: function(arg$){
@@ -202,7 +257,8 @@ stage.prototype = import$(Object.create(Object.prototype), {
       res$.push(lresult$);
     }
     this.nodes = res$;
-    return this.renderUser();
+    this.renderUser();
+    return this.view.render();
   },
   load: function(arg$){
     var lv, this$ = this;
@@ -213,12 +269,15 @@ stage.prototype = import$(Object.create(Object.prototype), {
       this$.data = eval(ret);
       this$.tiles = this$.data.tiles;
       import$(this$.user, this$.data.user);
+      this$.lv = lv;
       import$(this$.dim, {
         f: this$.data.tiles.length,
         h: this$.data.tiles[0].length,
         w: this$.data.tiles[0][0].length
       });
       return this$.render();
+    })['catch'](function(){
+      return this$.ldcv.finish.toggle(true);
     });
   },
   transform: function(arg$){
@@ -248,7 +307,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
   }
 });
 stage.prototype.firekey = function(t){
-  var ref$, tileinfo, u, applyDefault, blockSize, blockVp, dx, dy, p, p0, p1, p2, f, ts, res$, i$, i, lresult$, j$, d, cx, cy, cf, df, dk, that, n, this$ = this;
+  var ref$, tileinfo, u, applyDefault, blockSize, blockVp, dx, dy, prepare, p, f, ts, p0, p1, p2, pd, n, df, dk, that, this$ = this;
   ref$ = [stage.tileinfo, this.user, true], tileinfo = ref$[0], u = ref$[1], applyDefault = ref$[2];
   ref$ = [stage.dim.size, stage.dim.vp], blockSize = ref$[0], blockVp = ref$[1];
   requestAnimationFrame(function(t){
@@ -275,40 +334,65 @@ stage.prototype.firekey = function(t){
   if (isNaN(dx)) {
     return;
   }
-  p = [
-    p0 = {
-      x: u.x,
-      y: u.y
-    }, p1 = {
-      x: u.x + dx,
-      y: u.y + dy
-    }, p2 = {
-      x: u.x + 2 * dx,
-      y: u.y + 2 * dy
+  prepare = function(){
+    var p, p0, p1, pd, p2, f, ts, res$, i$, i, lresult$, j$, d, ref$, cx, cy, cf;
+    p = [
+      p0 = {
+        x: u.x,
+        y: u.y
+      }, p1 = pd = {
+        x: u.x + dx,
+        y: u.y + dy,
+        f: u.f
+      }, p2 = {
+        x: u.x + 2 * dx,
+        y: u.y + 2 * dy
+      }
+    ];
+    f = [u.f - 1, u.f, u.f + 1];
+    if (p1.x < 0 || p1.x >= this$.dim.w || p1.y < 0 || p1.y >= this$.dim.h || f[1] < 0 || f[1] >= this$.dim.f) {
+      return [];
     }
-  ];
-  f = [u.f - 1, u.f, u.f + 1];
-  if (p1.x < 0 || p1.x >= this.dim.w || p1.y < 0 || p1.y >= this.dim.h || f[1] < 0 || f[1] >= this.dim.f) {
+    res$ = [];
+    for (i$ = 0; i$ < 3; ++i$) {
+      i = i$;
+      lresult$ = [];
+      for (j$ = 0; j$ < 3; ++j$) {
+        d = j$;
+        ref$ = [p[d].x, p[d].y, f[i]], cx = ref$[0], cy = ref$[1], cf = ref$[2];
+        if (cx < 0 || cx >= this$.dim.w || cy < 0 || cy >= this$.dim.h || cf < 0 || cf >= this$.dim.f) {
+          lresult$.push(0);
+        } else if (!this$.tiles[cf]) {
+          lresult$.push(0);
+        } else {
+          lresult$.push(this$.tiles[cf][cy][cx]);
+        }
+      }
+      res$.push(lresult$);
+    }
+    ts = res$;
+    return [p, f, ts, p0, p1, p2, pd];
+  };
+  ref$ = prepare(), p = ref$[0], f = ref$[1], ts = ref$[2], p0 = ref$[3], p1 = ref$[4], p2 = ref$[5], pd = ref$[6];
+  if (!p) {
     return;
   }
-  res$ = [];
-  for (i$ = 0; i$ < 3; ++i$) {
-    i = i$;
-    lresult$ = [];
-    for (j$ = 0; j$ < 3; ++j$) {
-      d = j$;
-      ref$ = [p[d].x, p[d].y, f[i]], cx = ref$[0], cy = ref$[1], cf = ref$[2];
-      if (cx < 0 || cx >= this.dim.w || cy < 0 || cy >= this.dim.h || cf < 0 || cf >= this.dim.f) {
-        lresult$.push(0);
-      } else if (!this.tiles[cf]) {
-        lresult$.push(0);
-      } else {
-        lresult$.push(this.tiles[cf][cy][cx]);
-      }
+  if (ts[1][0] === 'j' && (tileinfo[ts[1][1]] && tileinfo[ts[1][1]].over) && (!tileinfo[ts[2][1]] || tileinfo[ts[2][1]].through)) {
+    u.f = u.f + 1;
+    ref$ = prepare(), p = ref$[0], f = ref$[1], ts = ref$[2], p0 = ref$[3], p1 = ref$[4], p2 = ref$[5], pd = ref$[6];
+    if (!p) {
+      return;
     }
-    res$.push(lresult$);
   }
-  ts = res$;
+  if (tileinfo[ts[1][1]] && tileinfo[ts[1][1]].score) {
+    this.tiles[f[1]][p1.y][p1.x] = 'a';
+    n = this.nodes[f[1]][p1.y][p1.x];
+    if (n && n.parentNode) {
+      n.parentNode.removeChild(n);
+    }
+    this.user.score = (this.user.score || 0) + tileinfo[ts[1][1]].score;
+    this.view.render();
+  }
   if (ts[1][1] === 'e') {
     if (!((ref$ = ts[1][2]) === 'a' || ref$ === 'f')) {
       return;
@@ -349,12 +433,24 @@ stage.prototype.firekey = function(t){
       n.parentNode.removeChild(n);
     }
   }
+  if (ts[1][1] === 'i') {
+    return this.load({
+      lv: this.lv + 1
+    });
+  }
+  if (ts[1][1] === 'a' && ts[0][1] === 'j') {
+    pd.f = pd.f - 1;
+    applyDefault = false;
+  }
   if (applyDefault) {
     if (tileinfo[ts[1][1]] && !tileinfo[ts[1][1]].through) {
       return;
     }
+    if (tileinfo[ts[0][1]] && !tileinfo[ts[0][1]].over) {
+      return;
+    }
   }
-  import$(u, p1);
+  import$(u, pd);
   return this.renderUser();
 };
 s = new stage();

@@ -1,33 +1,33 @@
-user: {x: 1, y: 2, f: 2}
+user: {x: 1, y: 1, f: 2}
 tiles: [
   [
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
-    [1 1 1 1 1 1 1 1]
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
+    <[b b b b b b b b]>
   ]
   [
-    [9 2 2 2 2 2 2 2]
-    [0 2 2 2 2 2 2 2]
-    [0 2 2 2 2 2 2 0]
-    [0 2 2 2 2 2 2 2]
-    [0 2 2 2 2 2 2 2]
-    [0 2 2 2 2 2 0 2]
-    [0 2 2 2 2 2 2 2]
-    [9 2 2 2 2 2 2 2]
+    <[j c c c c c c c]>
+    <[a c c c c c c c]>
+    <[a c c c c c c a]>
+    <[a c c c c c c c]>
+    <[a c c c c c c c]>
+    <[a c c c c c a c]>
+    <[a c c c c c c c]>
+    <[j c c c c c c c]>
   ]
   [
-    [0 0 3 3 0 0 0 0]
-    [0 0 0 5 0 0 4 0]
-    [0 4 0 3 0 0 3 0]
-    [0 10 3 3 0 3 0 0]
-    [0 0 3 0 4 0 5 0]
-    [0 7 3 0 0 3 0 3]
-    [0 3 3 0 0 3 6 3]
-    [0 0 0 0 0 3 500 3]
+    <[a a d d a a a a]>
+    <[a a a f a a e a]>
+    <[a e a d a a d a]>
+    <[a k d d a d a a]>
+    <[a a d a e a f a]>
+    <[a h d a a d a d]>
+    <[a d d a a d g d]>
+    <[a a a a a d l d]>
   ]
 ]

@@ -14,13 +14,27 @@ html,body
   margin: 0
   padding: 0
 
+@keyframes walking
+  0%
+    background-position-x: 0
+  25%
+    background-position-x: -(size * 1)
+  50%
+    background-position-x: -(size * 2)
+  75%
+    background-position-x: -(size * 3)
+  100%
+    background-position-x: -(size * 0)
+
 .user
   position: absolute
   width: size
   height: size + vp
-  background: #fff
   transition: left .1s linear, top .1s linear
   border-radius: br * 3
+  background: url(/assets/img/user.png)
+  background-size: (size * 4)  (size * 4 * 1.4964)
+  animation: walking 1s infinite steps(1,end)
 
 .tile
   position: absolute
