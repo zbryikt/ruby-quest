@@ -28,7 +28,7 @@
     "ldcover": "github:loadingio/ldCover",
     "ldiconfont": "github:loadingio/ldiconfont",
     "ldview": "0.0.2",
-    "template": "github:zbryikt/template#v2.1.2"
+    "template": "github:zbryikt/template#v2.1.6"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",

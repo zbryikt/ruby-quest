@@ -1,0 +1,17 @@
+extends /base.pug
+block vars
+  - assets = function(path) { return "assets/pack/devil-workshop/3D/png/" + path; }
+block head
+  style(type="text/css"): :stylus
+    body
+      background: #212529
+      /* background: url(/assets/img/cloud.svg) center center */
+block body
+  .tile.d-none(ld="sample-tile") #[.b]#[.e]#[.t]#[.s]
+  .w-100.h-100.d-flex.justify-content-center.align-items-center
+    .scene(ld="scene")
+      .field(ld="field")
+      .user(ld="user")
+block script
+  +script("/js/v2.js")
+
