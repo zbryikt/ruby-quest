@@ -2,10 +2,63 @@ extends /base.pug
 block vars
   - assets = function(path) { return "assets/pack/devil-workshop/3D/png/" + path; }
 block head
+  style(type="text/css"): :stylus
+    body
+      background: #212529
+      /* background: url(/assets/img/cloud.svg) center center */
 block body
-  .tile.d-none(ld="sample") #[.b]#[.e]#[.t]#[.s]
-  .w-100.h-100.d-flex.justify-content-center.align-items-center
-    .field(ld="field")
-      .player(ld="player")
+  .tile.d-none(ld="sample-tile") #[.b]#[.e]#[.t]#[.s]
+  .w-100.h-100.d-flex.justify-content-center.align-items-center.flex-column
+    .scene(ld="scene")
+      .field(ld="field")
+      .user(ld="user")
+      .cursor(ld="cursor")
+    div(ld="on-mode",data-mode="play"): .d-flex
+      .info.py-2.pl-3.pr-4.text-sm.rounded.bg-dark.text-light.shadow.d-flex.align-items-center: div
+        .d-flex
+          div 關卡
+          .lv.text-right(style="width:8em",ld="lv") 0
+        .d-flex
+          div 得分
+          .score.text-right(style="width:8em",ld="score") 0
+      .bg-dark.text-light.ml-2.p-3.rounded.shadow.clickable.d-flex.align-items-center(ld="restart") 重來#[sup R]
+      .bg-dark.text-light.ml-2.p-3.rounded.shadow.clickable.d-flex.align-items-center(ld="go-edit") 編輯
+    .rounded.p-2.shadow(ld="on-mode",data-mode="edit"): .d-flex
+      .d-flex.flex-column
+
+        .d-flex.align-items-center.flex-grow-1.mb-2
+          .text-sm.text-center.text-secondary.mr-2 擴大
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="0") ←
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="1") ↑
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="2") →
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="3") ↓
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="8") △
+          .btn.btn-sm.btn-dark.flex-grow-1(ld="ext",data-type="9") ▽
+        .d-flex.align-items-center.flex-grow-1
+          .text-sm.text-center.text-secondary.mr-2 縮小
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="4") →
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="5") ↓
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="6") ←
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="7") ↑
+          .btn.btn-sm.btn-dark.mr-1.flex-grow-1(ld="ext",data-type="10") ▽
+          .btn.btn-sm.btn-dark.flex-grow-1(ld="ext",data-type="11") △
+      .bg-dark.text-light.ml-2.p-3.rounded.shadow.clickable(ld="picked")
+      .bg-dark.text-light.ml-2.p-3.rounded.shadow.clickable.d-flex.align-items-center(ld="test-run") 試玩
+      .bg-dark.text-light.ml-2.p-3.rounded.shadow.clickable.d-flex.align-items-center(ld="download") 輸出
+
+  .ldcv(ld="finish"): .w-640.base: .inner.card: .card-body
+    .text-center
+      img.mb-4(src="/assets/img/cheers.svg",style="width:96px")
+      div: img(src="/assets/img/finish.svg")
+    .m-4.text-center.text-lg
+      p 恭喜你破關！你的總得分為：
+      .m-4.font-weight-bold: h1.text-success #[span(ld="score")] 
+    .text-center: .btn.btn-lg.btn-primary(ld="reset") 我想要重頭再玩一次 
+    +nbr(1)
+  audio(ld="bgm",loop)
+    source(src="/assets/snd/bgm.ogg",type="audio/ogg")
+
+
 block script
   +script("/js/index.js")
+

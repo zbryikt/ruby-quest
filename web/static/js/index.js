@@ -1,277 +1,756 @@
-var zIndex, classMap, state, view, renderPlayer, firekey, player, field, sample, res$, i$, to$, f, lresult$, j$, to1$, h, lresult1$, k$, to2$, w, n, loadLevel;
-zIndex = function(arg$){
-  var x, y, f, p;
-  x = arg$.x, y = arg$.y, f = arg$.f, p = arg$.p;
-  return (f * state.dim.w * state.dim.h + y) * 2 + (p ? 1 : 0);
+var cp, stage, s;
+cp = function(it){
+  return JSON.parse(JSON.stringify(it));
 };
-classMap = {
-  0: 'void',
-  1: 'bedrock',
-  2: 'earth',
-  3: 'wall',
-  4: 'stool',
-  5: 'grass',
-  6: 'door',
-  7: 'key',
-  8: 'exit',
-  9: 'stair',
-  10: 'gravel',
-  500: 'sapphire'
-};
-state = {
-  player: {
-    x: 1,
-    y: 1,
-    f: 2,
+stage = function(){
+  this.data = {};
+  this.dim = {};
+  this.user = {
     item: []
-  },
-  dim: {
-    size: 32,
-    vp: 12
-  },
-  nodes: [],
-  tiles: [[[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]], [[9, 2, 2, 2, 2, 2, 2, 2], [0, 2, 2, 2, 2, 2, 2, 2], [0, 2, 2, 2, 2, 2, 2, 0], [0, 2, 2, 2, 2, 2, 2, 2], [0, 2, 2, 2, 2, 2, 2, 2], [0, 2, 2, 2, 2, 2, 0, 2], [0, 2, 2, 2, 2, 2, 2, 2], [9, 2, 2, 2, 2, 2, 2, 2]], [[0, 0, 3, 3, 0, 0, 0, 0], [0, 0, 0, 5, 0, 0, 4, 0], [0, 4, 0, 3, 0, 0, 3, 0], [0, 10, 3, 3, 0, 3, 0, 0], [0, 0, 3, 0, 4, 0, 5, 0], [0, 7, 3, 0, 0, 3, 0, 3], [0, 3, 3, 0, 0, 3, 6, 3], [0, 0, 0, 0, 0, 3, 500, 3]]]
-  /*
-    [
-      [2 2 2 2 2 2 2 2 2 2 2]
-      [2 2 2 2 2 2 2 2 2 2 2]
-      [2 2 2 2 0 0 0 2 2 2 2]
-      [2 2 2 9 0 0 0 9 2 2 2]
-      [2 2 2 0 0 0 0 0 2 2 2]
-      [2 2 2 0 0 0 0 0 2 2 2]
-      [2 2 2 0 0 0 0 0 2 2 2]
-      [2 2 2 0 0 0 0 0 2 2 2]
-      [2 2 2 2 2 2 2 2 2 2 2]
-      [2 2 2 2 2 2 2 2 2 2 2]
-      [2 2 2 2 2 2 2 2 2 2 2]
-  
-    ]
-  
-    [
-      [3 3 3 3 3 3 3 3 3 3 3]
-      [3 9 4 0 0 0 0 0 10 0 3]
-      [3 0 0 0 0 0 0 0 0 0 3]
-      [3 0 4 0 0 0 0 0 0 0 3]
-      [3 0 5 0 0 0 0 0 4 0 3]
-      [3 0 0 0 0 0 0 0 0 0 3]
-      [3 0 500 0 0 0 0 0 0 0 3]
-      [3 0 0 0 0 0 0 0 0 0 3]
-      [3 0 0 0 0 0 0 0 7 0 3]
-      [3 0 0 0 0 0 0 0 0 6 3]
-      [3 3 3 3 3 3 3 3 3 3 3]
-  
-    ]
-  
-  ]
-  */
+  };
+  this.cursor = {
+    key: 'c'
+  };
+  this.lv = 0;
+  this.loader = {};
+  this.ldcv = {};
+  this.snd = {};
+  this.mode = 'play';
+  return this;
 };
-state.dim.f = state.tiles.length;
-state.dim.h = state.tiles[0].length;
-state.dim.w = state.tiles[0][0].length;
-view = new ldView({
-  root: document.body,
-  handler: {
-    field: function(){},
-    sample: function(){},
-    player: function(){}
+stage.dim = {
+  size: 32,
+  vp: 12
+};
+stage.tileinfo = {
+  a: {
+    name: 'void',
+    through: true,
+    over: false,
+    fill: true,
+    push: true
+  },
+  b: {
+    name: 'bedrock',
+    through: false,
+    over: true,
+    fill: false,
+    push: false
+  },
+  c: {
+    name: 'earth',
+    through: false,
+    over: true,
+    fill: false,
+    push: false
+  },
+  d: {
+    name: 'wall',
+    through: false,
+    over: true,
+    fill: false,
+    push: false
+  },
+  e: {
+    name: 'stool',
+    through: false,
+    over: true,
+    fill: false,
+    push: false
+  },
+  f: {
+    name: 'grass',
+    through: false,
+    over: false,
+    fill: true,
+    push: false
+  },
+  g: {
+    name: 'door',
+    through: true,
+    over: false,
+    fill: false,
+    push: false
+  },
+  h: {
+    name: 'key',
+    through: true,
+    over: false,
+    fill: false,
+    push: false
+  },
+  i: {
+    name: 'exit',
+    through: true,
+    over: false,
+    fill: false,
+    push: false
+  },
+  j: {
+    name: 'stair',
+    through: true,
+    over: false,
+    fill: false,
+    push: false
+  },
+  k: {
+    name: 'gravel',
+    through: true,
+    over: false,
+    fill: false,
+    push: false
+  },
+  l: {
+    name: 'sapphire',
+    through: true,
+    over: false,
+    fill: false,
+    push: false,
+    score: 10
   }
-});
-renderPlayer = function(){
-  return import$(player.style, {
-    left: state.player.x * state.dim.size + "px",
-    top: (state.player.y * state.dim.size - state.player.f * state.dim.vp) + "px",
-    zIndex: zIndex({
-      f: state.player.f,
-      y: state.player.y,
-      x: state.player.x,
-      p: 1
-    })
-  });
 };
-firekey = function(t){
-  var p, c, ref$, dx, dy, n, nx, ny, nf, mx, my, mf, cidx, tidx, bidx, fidx, i$, to$, f, j$, to1$, h, k$, to2$, w, df, ntv, that;
-  p = state.player;
-  if (p.moving) {
-    if (!p.lastMoveTime || t - p.lastMoveTime > 100) {
-      p.lastMoveTime = t;
-      c = {
-        x: p.x,
-        y: p.y,
-        f: p.f
-      };
-      switch (p.dir) {
-      case 0:
-        ref$ = [-1, 0], dx = ref$[0], dy = ref$[1];
-        break;
-      case 1:
-        ref$ = [0, -1], dx = ref$[0], dy = ref$[1];
-        break;
-      case 2:
-        ref$ = [1, 0], dx = ref$[0], dy = ref$[1];
-        break;
-      case 3:
-        ref$ = [0, 1], dx = ref$[0], dy = ref$[1];
+stage.prototype = import$(Object.create(Object.prototype), {
+  restart: function(){
+    this.user.score = this.user.startScore;
+    return this.load({
+      lv: this.lv
+    });
+  },
+  reset: function(){
+    this.user.score = 0;
+    return this.load({
+      lv: 1
+    });
+  },
+  sndPlay: function(n){
+    this.snd[n].currentTime = 0;
+    return this.snd[n].play();
+  },
+  setMode: function(mode){
+    mode == null && (mode = 'edit');
+    if (mode === 'edit') {
+      if (this.editData) {
+        this.data = cp(this.editData);
+        this.tiles = this.data.tiles;
+        this.users = this.data.users;
       }
-      if (!isNaN(dx)) {
-        n = {
-          x: c.x + dx,
-          y: c.y + dy,
-          f: c.f
-        };
-        ref$ = [p.x + dx, p.y + dy, c.f], nx = ref$[0], ny = ref$[1], nf = ref$[2];
-        ref$ = [nx + dx, ny + dy, nf], mx = ref$[0], my = ref$[1], mf = ref$[2];
-        if (!(nx < 0 || nx >= state.dim.w || ny < 0 || ny >= state.dim.h || nf < 0)) {
-          cidx = state.tiles[p.f] ? state.tiles[p.f][p.y][p.x] : 0;
-          tidx = state.tiles[nf] ? state.tiles[nf][ny][nx] : 0;
-          bidx = nf > 0 ? state.tiles[nf - 1][ny][nx] : 1;
-          fidx = state.tiles[nf + 1] ? state.tiles[nf + 1][ny][nx] : 0;
-          if (fidx === 0 && (tidx === 1 || tidx === 2 || tidx === 3) && cidx === 9) {
-            n.f = n.f + 1;
-            nf = n.f;
-            mf = nf;
-            cidx = state.tiles[p.f][p.y][p.x];
-            tidx = state.tiles[nf] ? state.tiles[nf][ny][nx] : 0;
-            bidx = nf > 0 ? state.tiles[nf - 1][ny][nx] : 1;
-          }
-          if (tidx === 1 || tidx === 2 || tidx === 3 || tidx === 5) {} else if (tidx === 0 && bidx === 9) {
-            n.f = n.f - 1;
-            import$(p, n);
-          } else if (tidx === 7) {
-            state.player.item.push(7);
-            state.tiles[nf][ny][nx] = 0;
-            state.nodes[nf][ny][nx].parentNode.removeChild(state.nodes[nf][ny][nx]);
-            import$(p, n);
-            for (i$ = 0, to$ = state.dim.f; i$ < to$; ++i$) {
-              f = i$;
-              for (j$ = 0, to1$ = state.dim.h; j$ < to1$; ++j$) {
-                h = j$;
-                for (k$ = 0, to2$ = state.dim.w; k$ < to2$; ++k$) {
-                  w = k$;
-                  if (state.tiles[f][h][w] === 6) {
-                    state.tiles[f][h][w] = 8;
-                    state.nodes[f][h][w].classList.remove(classMap[6]);
-                    state.nodes[f][h][w].classList.add(classMap[8]);
-                  }
-                }
+      this.mode = 'edit';
+      return this.render();
+    } else {
+      this.editData = cp(this.data);
+      import$(this.user, this.data.user);
+      this.mode = 'play';
+      return this.render();
+    }
+  },
+  init: function(){
+    var view, this$ = this;
+    this.view = view = new ldView({
+      initRender: false,
+      root: document.body,
+      init: {
+        finish: function(arg$){
+          var node;
+          node = arg$.node;
+          return this$.ldcv.finish = new ldCover({
+            root: node
+          });
+        },
+        picked: function(arg$){
+          var node;
+          node = arg$.node;
+          return node.appendChild(this$.el.sampleTile.cloneNode(true));
+        }
+      },
+      text: {
+        lv: function(){
+          return this$.lv || 1;
+        },
+        score: function(){
+          return this$.user.score || 0;
+        }
+      },
+      handler: {
+        "on-mode": function(arg$){
+          var node, mode;
+          node = arg$.node;
+          mode = node.getAttribute('data-mode');
+          return node.classList.toggle('d-none', mode !== this$.mode);
+        },
+        "sample-tile": function(){},
+        field: function(){},
+        user: function(){},
+        cursor: function(){},
+        scene: function(){},
+        lv: function(){},
+        score: function(){},
+        picked: function(arg$){
+          var node;
+          node = arg$.node;
+          return node.childNodes[0].setAttribute('class', (['tile'].concat([stage.tileinfo[this$.cursor.key].name])).join(' '));
+        }
+      },
+      action: {
+        click: {
+          "go-edit": function(){
+            return this$.setMode('edit');
+          },
+          "test-run": function(){
+            return this$.setMode('play');
+          },
+          "download": function(){
+            var href, n;
+            href = URL.createObjectURL(new Blob([JSON.stringify(this$.data)], {
+              type: 'application/json'
+            }));
+            n = ld$.create({
+              name: 'a',
+              attr: {
+                href: href,
+                download: 'result.json'
               }
-            }
-          } else if (tidx === 500) {
-            state.tiles[nf][ny][nx] = 0;
-            state.nodes[nf][ny][nx].parentNode.removeChild(state.nodes[nf][ny][nx]);
-            import$(p, n);
-          } else if (tidx === 4) {
-            if (((ref$ = state.tiles[nf][my][mx]) === 0 || ref$ === 5) && (!state.tiles[nf - 1] || !(state.tiles[nf - 1][my][mx] === 9))) {
-              df = nf > 0 && state.tiles[nf - 1][my][mx] === 0 ? -1 : 0;
-              mf = nf + df;
-              state.tiles[nf][ny][nx] = 0;
-              state.tiles[mf][my][mx] = ntv = df === -1 ? 2 : 4;
-              import$(state.nodes[nf][ny][nx].style, {
-                left: mx * state.dim.size + "px",
-                top: (my * state.dim.size - mf * state.dim.vp) + "px",
-                zIndex: zIndex({
-                  f: mf,
-                  y: my,
-                  x: mx,
-                  p: 0
-                })
+            });
+            document.body.appendChild(n);
+            n.click();
+            return document.body.removeChild(n);
+          },
+          restart: function(){
+            return this$.restart();
+          },
+          reset: function(){
+            this$.ldcv.finish.toggle(false);
+            return this$.reset();
+          },
+          ext: function(arg$){
+            var node, type, ref$;
+            node = arg$.node;
+            type = +node.getAttribute('data-type');
+            if (type === 0) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(0, 0, cp(it[0]));
+                });
               });
-              state.nodes[nf][ny][nx].classList.remove(classMap[4]);
-              state.nodes[nf][ny][nx].classList.add(classMap[ntv]);
-              if (that = state.nodes[mf][my][mx]) {
-                if (that.parentNode) {
-                  state.nodes[mf][my][mx].parentNode.removeChild(state.nodes[mf][my][mx]);
-                }
-              }
-              state.nodes[mf][my][mx] = state.nodes[nf][ny][nx];
-              state.nodes[nf][ny][nx] = null;
-              import$(p, n);
             }
-          } else if (bidx === 0) {} else {
-            import$(p, n);
+            if (type === 1) {
+              this$.tiles.map(function(it){
+                return it.splice(0, 0, cp(it[0]));
+              });
+            }
+            if (type === 2) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(it.length, 0, cp(it[it.length - 1]));
+                });
+              });
+            }
+            if (type === 3) {
+              this$.tiles.map(function(it){
+                return it.splice(it.length, 0, cp(it[it.length - 1]));
+              });
+            }
+            if (type === 4) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(0, 1);
+                });
+              });
+            }
+            if (type === 5) {
+              this$.tiles.map(function(it){
+                return it.splice(0, 1);
+              });
+            }
+            if (type === 6) {
+              this$.tiles.map(function(it){
+                return it.map(function(it){
+                  return it.splice(it.length - 1, 1);
+                });
+              });
+            }
+            if (type === 7) {
+              this$.tiles.map(function(it){
+                return it.splice(it.length - 1, 1);
+              });
+            }
+            if (type === 8) {
+              this$.tiles.splice(this$.tiles.length, 0, (ref$ = this$.tiles)[ref$.length - 1].map(function(it){
+                return it.map(function(){
+                  return 'a';
+                });
+              }));
+            }
+            if (type === 9) {
+              this$.tiles.splice(0, 0, cp(this$.tiles[0]));
+            }
+            if (type === 10 && this$.tiles.length > 1) {
+              this$.tiles.splice(this$.tiles.length - 1, 1);
+            }
+            if (type === 11 && this$.tiles.length > 1) {
+              this$.tiles.splice(0, 1);
+            }
+            this$.prepare();
+            return this$.render();
           }
-          renderPlayer();
         }
       }
+    });
+    this.el = {
+      sampleTile: view.get('sample-tile').cloneNode(true),
+      scene: view.get('scene'),
+      field: view.get('field'),
+      user: view.get('user'),
+      cursor: view.get('cursor'),
+      picked: view.get('picked'),
+      bgm: view.get('bgm')
+    };
+    this.el.sampleTile.classList.remove('d-none');
+    this.view.render();
+    this.snd.get = new Audio('/assets/snd/get.ogg');
+    this.snd.pass = new Audio('/assets/snd/pass.ogg');
+    this.snd.key = new Audio('/assets/snd/key.ogg');
+    this.snd.push = new Audio('/assets/snd/push.ogg');
+    this.snd.hit = new Audio('/assets/snd/hit.ogg');
+    requestAnimationFrame(function(t){
+      return this$.firekey(t);
+    });
+    document.addEventListener('keyup', function(e){
+      var keycode, u, dir;
+      keycode = e.which;
+      if (keycode === 32) {
+        this$.cursor.entering = false;
+      }
+      if (keycode < 37 || keycode > 40) {
+        return;
+      }
+      u = this$.user;
+      dir = keycode - 37;
+      if (u.dir === dir) {
+        return u.moving = false;
+      }
+    });
+    return document.addEventListener('keydown', function(e){
+      var ref$, u, keycode, ref1$, delta, i, j, ks, res$, k, dir;
+      ref$ = [this$.user, e.which], u = ref$[0], keycode = ref$[1];
+      if (this$.el.bgm.paused) {
+        this$.el.bgm.play();
+      }
+      if (keycode === 82 && this$.mode === 'play') {
+        return this$.restart();
+      }
+      if (this$.mode === 'edit') {
+        if (keycode === 80) {
+          ref1$ = this$.data.user;
+          ref1$.x = (ref$ = this$.user).x;
+          ref1$.y = ref$.y;
+          ref1$.f = ref$.f;
+          this$.renderUser();
+        }
+        if (keycode === 83 || keycode === 87) {
+          delta = keycode === 83 ? -1 : 1;
+          u.f = (ref1$ = u.f + delta) > 0 ? ref1$ : 0;
+          if (u.f >= this$.dim.f) {
+            u.f = this$.dim.f - 1;
+          }
+          if (!this$.tiles[u.f]) {
+            this$.tiles[u.f] = (function(){
+              var i$, to$, lresult$, j$, to1$, results$ = [];
+              for (i$ = 0, to$ = this.dim.h; i$ < to$; ++i$) {
+                i = i$;
+                lresult$ = [];
+                for (j$ = 0, to1$ = this.dim.w; j$ < to1$; ++j$) {
+                  j = j$;
+                  lresult$.push('a');
+                }
+                results$.push(lresult$);
+              }
+              return results$;
+            }.call(this$));
+          }
+          this$.render();
+        }
+        if (keycode === 65 || keycode === 68) {
+          res$ = [];
+          for (k in stage.tileinfo) {
+            res$.push(k);
+          }
+          ks = res$;
+          delta = keycode === 65 ? -1 : 1;
+          this$.cursor.key = ks[(ks.indexOf(this$.cursor.key) + delta + ks.length) % ks.length];
+          this$.renderUser();
+        }
+        if (keycode === 8) {
+          this$.tiles[u.f][u.y][u.x] = 'a';
+          this$.render();
+        }
+        if (keycode === 32) {
+          this$.cursor.entering = true;
+          this$.tiles[u.f][u.y][u.x] = this$.cursor.key;
+          this$.render();
+        }
+        if (keycode === 70) {
+          this$.tiles[u.f].map(function(it){
+            var i$, to$, i, results$ = [];
+            for (i$ = 0, to$ = it.length; i$ < to$; ++i$) {
+              i = i$;
+              results$.push(it[i] = this$.cursor.key);
+            }
+            return results$;
+          });
+          this$.render();
+        }
+      }
+      if (keycode < 37 || keycode > 40) {
+        return;
+      }
+      dir = keycode - 37;
+      if (u.dir !== dir || !u.moving) {
+        u.lastMoveTime = null;
+      }
+      u.dir = dir;
+      u.moving = true;
+      return this$.el.user.style.backgroundPositionY = -stage.dim.size * 1.4964 * [2, 1, 3, 0][dir] + "px";
+    });
+  },
+  zIndex: function(arg$){
+    var x, y, f, p;
+    x = arg$.x, y = arg$.y, f = arg$.f, p = arg$.p;
+    return (f * this.dim.w * this.dim.h + y) * 2 + (p ? 1 : 0);
+  },
+  renderUser: function(){
+    var ref$, blockSize, blockVp, x, y, f;
+    ref$ = [stage.dim.size, stage.dim.vp], blockSize = ref$[0], blockVp = ref$[1];
+    ref$ = this.mode === 'play'
+      ? this.user
+      : this.data.user, x = ref$.x, y = ref$.y, f = ref$.f;
+    import$(this.el.user.style, {
+      left: x * blockSize + "px",
+      top: (y * blockSize - f * blockVp) + "px",
+      zIndex: this.zIndex({
+        f: f,
+        y: y,
+        x: x,
+        p: 1
+      })
+    });
+    import$(this.el.cursor.style, {
+      left: this.user.x * blockSize + "px",
+      top: (this.user.y * blockSize - this.user.f * blockVp) + "px",
+      zIndex: this.zIndex({
+        f: this.user.f,
+        y: this.user.y,
+        x: this.user.x,
+        p: 1
+      })
+    });
+    this.el.cursor.style.display = this.mode === 'edit' ? 'block' : 'none';
+    return this.view.render('picked');
+  },
+  render: function(){
+    var ref$, dim, tiles, tileinfo, blockSize, blockVp, sample, field, scene, res$, i$, to$, f, lresult$, j$, to1$, h, lresult1$, k$, to2$, w, n;
+    ref$ = [this.dim, this.tiles, stage.tileinfo], dim = ref$[0], tiles = ref$[1], tileinfo = ref$[2];
+    ref$ = [stage.dim.size, stage.dim.vp], blockSize = ref$[0], blockVp = ref$[1];
+    ref$ = [this.el.sampleTile, this.el.field, this.el.scene], sample = ref$[0], field = ref$[1], scene = ref$[2];
+    import$(scene.style, {
+      width: dim.w * blockSize + "px",
+      height: (dim.h * blockSize + blockVp) + "px"
+    });
+    field.innerHTML = "";
+    this.nodes = [];
+    res$ = [];
+    for (i$ = 0, to$ = dim.f; i$ < to$; ++i$) {
+      f = i$;
+      lresult$ = [];
+      for (j$ = 0, to1$ = dim.h; j$ < to1$; ++j$) {
+        h = j$;
+        lresult1$ = [];
+        for (k$ = 0, to2$ = dim.w; k$ < to2$; ++k$) {
+          w = k$;
+          n = sample.cloneNode(true);
+          field.appendChild(n);
+          n.classList.add(tileinfo[tiles[f][h][w]].name);
+          import$(n.style, {
+            left: w * blockSize + "px",
+            top: (h * blockSize - f * blockVp) + "px",
+            zIndex: this.zIndex({
+              f: f,
+              x: w,
+              y: h,
+              p: 0
+            })
+          });
+          lresult1$.push(n);
+        }
+        lresult$.push(lresult1$);
+      }
+      res$.push(lresult$);
+    }
+    this.nodes = res$;
+    this.renderUser();
+    return this.view.render();
+  },
+  prepare: function(){
+    this.tiles = this.data.tiles;
+    import$(this.user, this.data.user);
+    return import$(this.dim, {
+      f: this.data.tiles.length,
+      h: this.data.tiles[0].length,
+      w: this.data.tiles[0][0].length
+    });
+  },
+  edit: function(){
+    var i, j;
+    this.mode = 'edit';
+    this.data = {
+      user: {
+        x: 0,
+        y: 0,
+        f: 0
+      },
+      tiles: [(function(){
+        var i$, lresult$, j$, results$ = [];
+        for (i$ = 0; i$ < 10; ++i$) {
+          i = i$;
+          lresult$ = [];
+          for (j$ = 0; j$ < 10; ++j$) {
+            j = j$;
+            lresult$.push('a');
+          }
+          results$.push(lresult$);
+        }
+        return results$;
+      }())]
+    };
+    this.prepare();
+    return this.render();
+  },
+  load: function(arg$){
+    var lv, path, this$ = this;
+    lv = arg$.lv, path = arg$.path;
+    path = path
+      ? path
+      : this.loader.path;
+    this.loader.path = path;
+    return ld$.fetch(path
+      ? path(lv)
+      : "/js/map/" + lv + ".js", {}, {
+      type: 'text'
+    }).then(function(ret){
+      var e;
+      try {
+        this$.data = JSON.parse(ret);
+      } catch (e$) {
+        e = e$;
+        this$.data = eval(ret);
+      }
+      this$.lv = lv;
+      this$.user.startScore = this$.user.score;
+      this$.prepare();
+      return this$.render();
+    })['catch'](function(){
+      return this$.ldcv.finish.toggle(true);
+    });
+  },
+  transform: function(arg$){
+    var src, des, ref$, tiles, nodes, tileinfo, dim, i$, to$, f, lresult$, j$, to1$, h, lresult1$, k$, to2$, w, results$ = [];
+    src = arg$.src, des = arg$.des;
+    ref$ = [this.tiles, this.nodes, stage.tileinfo, this.dim], tiles = ref$[0], nodes = ref$[1], tileinfo = ref$[2], dim = ref$[3];
+    for (i$ = 0, to$ = dim.f; i$ < to$; ++i$) {
+      f = i$;
+      lresult$ = [];
+      for (j$ = 0, to1$ = dim.h; j$ < to1$; ++j$) {
+        h = j$;
+        lresult1$ = [];
+        for (k$ = 0, to2$ = dim.w; k$ < to2$; ++k$) {
+          w = k$;
+          if (!(tiles[f][h][w] === src)) {
+            continue;
+          }
+          tiles[f][h][w] = des;
+          nodes[f][h][w].classList.remove(tileinfo[src].name);
+          lresult1$.push(nodes[f][h][w].classList.add(tileinfo[des].name));
+        }
+        lresult$.push(lresult1$);
+      }
+      results$.push(lresult$);
+    }
+    return results$;
+  }
+});
+stage.prototype.firekey = function(t){
+  var ref$, tileinfo, u, applyDefault, blockSize, blockVp, dx, dy, prepare, p, f, ts, p0, p1, p2, pd, n, df, dk, that, this$ = this;
+  ref$ = [stage.tileinfo, this.user, true], tileinfo = ref$[0], u = ref$[1], applyDefault = ref$[2];
+  ref$ = [stage.dim.size, stage.dim.vp], blockSize = ref$[0], blockVp = ref$[1];
+  requestAnimationFrame(function(t){
+    return this$.firekey(t);
+  });
+  if (!u.moving || (u.lastMoveTime && t - u.lastMoveTime < 100)) {
+    return;
+  }
+  u.lastMoveTime = t;
+  ref$ = (function(){
+    switch (u.dir) {
+    case 0:
+      return [-1, 0];
+    case 1:
+      return [0, -1];
+    case 2:
+      return [1, 0];
+    case 3:
+      return [0, 1];
+    default:
+      return [NaN, NaN];
+    }
+  }()), dx = ref$[0], dy = ref$[1];
+  if (isNaN(dx)) {
+    return;
+  }
+  prepare = function(){
+    var p, p0, p1, pd, p2, f, ts, res$, i$, i, lresult$, j$, d, ref$, cx, cy, cf;
+    p = [
+      p0 = {
+        x: u.x,
+        y: u.y
+      }, p1 = pd = {
+        x: u.x + dx,
+        y: u.y + dy,
+        f: u.f
+      }, p2 = {
+        x: u.x + 2 * dx,
+        y: u.y + 2 * dy
+      }
+    ];
+    f = [u.f - 1, u.f, u.f + 1];
+    if (p1.x < 0 || p1.x >= this$.dim.w || p1.y < 0 || p1.y >= this$.dim.h || f[1] < 0 || f[1] >= this$.dim.f) {
+      return [];
+    }
+    res$ = [];
+    for (i$ = 0; i$ < 3; ++i$) {
+      i = i$;
+      lresult$ = [];
+      for (j$ = 0; j$ < 3; ++j$) {
+        d = j$;
+        ref$ = [p[d].x, p[d].y, f[i]], cx = ref$[0], cy = ref$[1], cf = ref$[2];
+        if (cx < 0 || cx >= this$.dim.w || cy < 0 || cy >= this$.dim.h || cf < 0 || cf >= this$.dim.f) {
+          lresult$.push(0);
+        } else if (!this$.tiles[cf]) {
+          lresult$.push(0);
+        } else {
+          lresult$.push(this$.tiles[cf][cy][cx]);
+        }
+      }
+      res$.push(lresult$);
+    }
+    ts = res$;
+    return [p, f, ts, p0, p1, p2, pd];
+  };
+  ref$ = prepare(), p = ref$[0], f = ref$[1], ts = ref$[2], p0 = ref$[3], p1 = ref$[4], p2 = ref$[5], pd = ref$[6];
+  if (!p) {
+    return;
+  }
+  if (this.mode === 'edit') {
+    import$(u, pd);
+    if (this.cursor.entering) {
+      this.tiles[u.f][u.y][u.x] = this.cursor.key;
+      this.render();
+    } else {
+      this.renderUser();
+    }
+    return;
+  }
+  if (ts[1][0] === 'j' && (tileinfo[ts[1][1]] && tileinfo[ts[1][1]].over) && (!tileinfo[ts[2][1]] || tileinfo[ts[2][1]].through)) {
+    u.f = u.f + 1;
+    ref$ = prepare(), p = ref$[0], f = ref$[1], ts = ref$[2], p0 = ref$[3], p1 = ref$[4], p2 = ref$[5], pd = ref$[6];
+    if (!p) {
+      return;
     }
   }
-  state.tick = t - p.t;
-  return requestAnimationFrame(function(t){
-    return firekey(t);
-  });
-};
-requestAnimationFrame(function(t){
-  return firekey(t);
-});
-document.addEventListener('keyup', function(e){
-  var p, dir;
-  if (e.key < 37 || e.key > 40) {
-    return;
+  if (tileinfo[ts[1][1]] && tileinfo[ts[1][1]].score) {
+    this.tiles[f[1]][p1.y][p1.x] = 'a';
+    n = this.nodes[f[1]][p1.y][p1.x];
+    if (n && n.parentNode) {
+      n.parentNode.removeChild(n);
+    }
+    this.user.score = (this.user.score || 0) + tileinfo[ts[1][1]].score;
+    this.sndPlay('get');
+    this.view.render();
   }
-  p = state.player;
-  dir = e.which - 37;
-  if (p.dir === dir) {
-    return state.player.moving = false;
+  if (ts[1][1] === 'e') {
+    if (!((ref$ = ts[1][2]) === 'a' || ref$ === 'f')) {
+      this.sndPlay('hit');
+      return;
+    }
+    ref$ = f[0] >= 0 && (!tileinfo[ts[0][2]] || tileinfo[ts[0][2]].fill)
+      ? [f[0], 'c']
+      : [f[1], 'e'], df = ref$[0], dk = ref$[1];
+    this.tiles[f[1]][p1.y][p1.x] = 'a';
+    this.tiles[df][p2.y][p2.x] = dk;
+    this.nodes[f[1]][p1.y][p1.x].classList.remove(tileinfo.e.name);
+    this.nodes[f[1]][p1.y][p1.x].classList.add(tileinfo[dk].name);
+    import$(this.nodes[f[1]][p1.y][p1.x].style, {
+      left: p2.x * blockSize + "px",
+      top: (p2.y * blockSize - df * blockVp) + "px",
+      zIndex: this.zIndex({
+        f: df,
+        y: p2.y,
+        x: p2.x,
+        p: 0
+      })
+    });
+    if (that = this.nodes[df][p2.y][p2.x]) {
+      that.parentNode.removeChild(that);
+    }
+    this.nodes[df][p2.y][p2.x] = this.nodes[f[1]][p1.y][p1.x];
+    this.nodes[f[1]][p1.y][p1.x] = null;
+    this.sndPlay('push');
+    applyDefault = false;
   }
-});
-document.addEventListener('keydown', function(e){
-  var p, dir;
-  if (e.key < 37 || e.key > 40) {
-    return;
+  if (ts[1][1] === 'h') {
+    this.sndPlay('key');
+    this.transform({
+      src: 'g',
+      des: 'i'
+    });
+    this.user.item.push(7);
+    this.tiles[f[1]][p1.y][p1.x] = 0;
+    n = this.nodes[f[1]][p1.y][p1.x];
+    if (n && n.parentNode) {
+      n.parentNode.removeChild(n);
+    }
   }
-  p = state.player;
-  dir = e.which - 37;
-  if (p.dir !== dir || !p.moving) {
-    p.lastMoveTime = null;
-  }
-  return p.dir = dir, p.moving = true, p;
-});
-player = view.get('player');
-field = view.get('field');
-sample = view.get('sample');
-sample = sample.cloneNode(true);
-sample.classList.remove('d-none');
-import$(field.style, {
-  width: state.dim.w * state.dim.size + "px",
-  height: (state.dim.h * state.dim.size + state.dim.vp * state.dim.f) + "px"
-});
-res$ = [];
-for (i$ = 0, to$ = state.dim.f; i$ < to$; ++i$) {
-  f = i$;
-  lresult$ = [];
-  for (j$ = 0, to1$ = state.dim.h; j$ < to1$; ++j$) {
-    h = j$;
-    lresult1$ = [];
-    for (k$ = 0, to2$ = state.dim.w; k$ < to2$; ++k$) {
-      w = k$;
-      n = sample.cloneNode(true);
-      field.appendChild(n);
-      n.classList.add(classMap[state.tiles[f][h][w]]);
-      import$(n.style, {
-        left: w * state.dim.size + "px",
-        top: (h * state.dim.size - f * state.dim.vp) + "px",
-        zIndex: zIndex({
-          f: f,
-          x: w,
-          y: h,
-          p: 0
-        })
+  if (ts[1][1] === 'i') {
+    this.sndPlay('pass');
+    if (this.editData) {
+      this.setMode('edit');
+    } else {
+      return this.load({
+        lv: this.lv + 1
       });
-      lresult1$.push(n);
     }
-    lresult$.push(lresult1$);
   }
-  res$.push(lresult$);
-}
-state.nodes = res$;
-renderPlayer();
-loadLevel = function(lv){
-  return ld$.fetch("/js/map/" + lv + ".js", {}, {
-    type: 'text'
-  }).then(function(it){
-    return console.log(eval(it));
-  });
+  if (ts[1][1] === 'a' && ts[0][1] === 'j') {
+    pd.f = pd.f - 1;
+    applyDefault = false;
+  }
+  if (applyDefault) {
+    if (tileinfo[ts[1][1]] && !tileinfo[ts[1][1]].through) {
+      return;
+    }
+    if (tileinfo[ts[0][1]] && !tileinfo[ts[0][1]].over) {
+      return;
+    }
+  }
+  import$(u, pd);
+  return this.renderUser();
 };
-loadLevel();
+s = new stage();
+s.init();
+s.load({
+  lv: 1,
+  path: function(it){
+    return "/assets/map/" + it + ".json";
+  }
+});
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
