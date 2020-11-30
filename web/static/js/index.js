@@ -107,6 +107,34 @@ stage.tileinfo = {
     fill: false,
     push: false,
     score: 10
+  },
+  m: {
+    name: 'button',
+    through: true,
+    over: false,
+    fill: false,
+    push: false
+  },
+  n: {
+    name: 'button-pressed',
+    through: true,
+    over: false,
+    fill: true,
+    push: false
+  },
+  o: {
+    name: 'trapwall',
+    through: true,
+    over: false,
+    fill: true,
+    push: false
+  },
+  p: {
+    name: 'trapdoor',
+    through: false,
+    over: true,
+    fill: false,
+    push: false
   }
 };
 stage.prototype = import$(Object.create(Object.prototype), {
@@ -141,7 +169,6 @@ stage.prototype = import$(Object.create(Object.prototype), {
       this.mode = 'edit';
       return this.render();
     } else {
-      this.editData = cp(this.data);
       import$(this.user, this.data.user);
       this.mode = 'play';
       return this.render();
@@ -200,6 +227,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
             return this$.setMode('edit');
           },
           "test-run": function(){
+            this$.editData = cp(this$.data);
             return this$.setMode('play');
           },
           "download": function(){
@@ -531,8 +559,8 @@ stage.prototype = import$(Object.create(Object.prototype), {
     return this.render();
   },
   load: function(arg$){
-    var lv, path, this$ = this;
-    lv = arg$.lv, path = arg$.path;
+    var lv, path, mode, this$ = this;
+    lv = arg$.lv, path = arg$.path, mode = arg$.mode;
     path = path
       ? path
       : this.loader.path;
@@ -552,10 +580,17 @@ stage.prototype = import$(Object.create(Object.prototype), {
       this$.lv = lv;
       this$.user.startScore = this$.user.score;
       this$.prepare();
-      return this$.render();
+      return this$.setMode(mode || 'play');
     })['catch'](function(){
       return this$.ldcv.finish.toggle(true);
     });
+  },
+  convert: function(arg$){
+    var x, y, f, src, des;
+    x = arg$.x, y = arg$.y, f = arg$.f, src = arg$.src, des = arg$.des;
+    this.tiles[f][y][x] = des;
+    this.nodes[f][y][x].classList.remove(stage.tileinfo[src].name);
+    return this.nodes[f][y][x].classList.add(stage.tileinfo[des].name);
   },
   transform: function(arg$){
     var src, des, ref$, tiles, nodes, tileinfo, dim, i$, to$, f, lresult$, j$, to1$, h, lresult1$, k$, to2$, w, results$ = [];
@@ -677,12 +712,31 @@ stage.prototype.firekey = function(t){
     if (n && n.parentNode) {
       n.parentNode.removeChild(n);
     }
+    this.nodes[f[1]][p1.y][p1.x] = null;
     this.user.score = (this.user.score || 0) + tileinfo[ts[1][1]].score;
     this.sndPlay('get');
     this.view.render();
   }
+  if (ts[1][1] === 'm') {
+    this.transform({
+      src: 'o',
+      des: 'd'
+    });
+    this.transform({
+      src: 'p',
+      des: 'a'
+    });
+    this.convert({
+      f: f[1],
+      x: p1.x,
+      y: p1.y,
+      src: 'm',
+      des: 'n'
+    });
+    this.render();
+  }
   if (ts[1][1] === 'e') {
-    if (!((ref$ = ts[1][2]) === 'a' || ref$ === 'f')) {
+    if (!((ref$ = ts[1][2]) === 'a' || ref$ === 'f' || ref$ === 'n' || ref$ === 'o')) {
       this.sndPlay('hit');
       return;
     }
@@ -718,11 +772,12 @@ stage.prototype.firekey = function(t){
       des: 'i'
     });
     this.user.item.push(7);
-    this.tiles[f[1]][p1.y][p1.x] = 0;
+    this.tiles[f[1]][p1.y][p1.x] = 'a';
     n = this.nodes[f[1]][p1.y][p1.x];
     if (n && n.parentNode) {
       n.parentNode.removeChild(n);
     }
+    this.nodes[f[1]][p1.y][p1.x] = null;
   }
   if (ts[1][1] === 'i') {
     this.sndPlay('pass');
@@ -754,7 +809,7 @@ s.init();
 s.load({
   lv: 1,
   path: function(it){
-    return "/assets/map/" + it + ".json";
+    return "/assets/map/basic/" + it + ".json";
   }
 });
 function import$(obj, src){

@@ -17,18 +17,22 @@ stage.dim = do
   vp: 12
 
 stage.tileinfo = do
-  a: name: \void,     through: true,  over: false, fill: true,  push: true
-  b: name: \bedrock,  through: false, over: true,  fill: false, push: false
-  c: name: \earth,    through: false, over: true,  fill: false, push: false
-  d: name: \wall,     through: false, over: true,  fill: false, push: false
-  e: name: \stool,    through: false, over: true,  fill: false, push: false
-  f: name: \grass,    through: false, over: false, fill: true,  push: false
-  g: name: \door,     through: true,  over: false, fill: false, push: false
-  h: name: \key,      through: true,  over: false, fill: false, push: false
-  i: name: \exit,     through: true,  over: false, fill: false, push: false
-  j: name: \stair,    through: true,  over: false, fill: false, push: false
-  k: name: \gravel,   through: true,  over: false, fill: false, push: false
-  l: name: \sapphire, through: true,  over: false, fill: false, push: false, score: 10
+  a: name: \void,           through: true,  over: false, fill: true,  push: true
+  b: name: \bedrock,        through: false, over: true,  fill: false, push: false
+  c: name: \earth,          through: false, over: true,  fill: false, push: false
+  d: name: \wall,           through: false, over: true,  fill: false, push: false
+  e: name: \stool,          through: false, over: true,  fill: false, push: false
+  f: name: \grass,          through: false, over: false, fill: true,  push: false
+  g: name: \door,           through: true,  over: false, fill: false, push: false
+  h: name: \key,            through: true,  over: false, fill: false, push: false
+  i: name: \exit,           through: true,  over: false, fill: false, push: false
+  j: name: \stair,          through: true,  over: false, fill: false, push: false
+  k: name: \gravel,         through: true,  over: false, fill: false, push: false
+  l: name: \sapphire,       through: true,  over: false, fill: false, push: false, score: 10
+  m: name: \button,         through: true,  over: false, fill: false, push: false
+  n: name: \button-pressed, through: true,  over: false, fill: true,  push: false
+  o: name: \trapwall,      through: true,  over: false,  fill: true, push: false
+  p: name: \trapdoor,      through: false,  over: true,  fill: false, push: false
 
 
 stage.prototype = Object.create(Object.prototype) <<< do
@@ -51,7 +55,6 @@ stage.prototype = Object.create(Object.prototype) <<< do
       @mode = \edit
       @render!
     else
-      @edit-data = cp @data
       @user <<< @data.user
       @mode = \play
       @render!
@@ -77,7 +80,9 @@ stage.prototype = Object.create(Object.prototype) <<< do
           node.childNodes.0.setAttribute \class, (<[tile]> ++ [stage.tileinfo[@cursor.key].name]).join(' ')
       action: click:
         "go-edit": ~> @set-mode \edit
-        "test-run": ~> @set-mode \play
+        "test-run": ~>
+          @edit-data = cp @data
+          @set-mode \play
         "download": ~>
           href = URL.createObjectURL(new Blob([JSON.stringify(@data)], {type: \application/json}))
           n = ld$.create name: \a, attr: {href,download: 'result.json'}
@@ -227,7 +232,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
     @prepare!
     @render!
 
-  load: ({lv, path}) ->
+  load: ({lv, path, mode}) ->
     path = if path => path else @loader.path 
     @loader.path = path
     ld$.fetch (if path => path(lv) else "/js/map/#lv.js"), {}, {type: \text}
@@ -239,10 +244,15 @@ stage.prototype = Object.create(Object.prototype) <<< do
         @lv = lv
         @user.start-score = @user.score
         @prepare!
-        @render!
+        @set-mode (mode or \play)
       .catch ~>
         @ldcv.finish.toggle true
 
+
+  convert: ({x, y, f, src, des}) ->
+    @tiles[f][y][x] = des
+    @nodes[f][y][x].classList.remove stage.tileinfo[src].name
+    @nodes[f][y][x].classList.add stage.tileinfo[des].name
 
   transform: ({src,des}) ->
     [tiles,nodes,tileinfo,dim] = [@tiles,@nodes,stage.tileinfo,@dim]
@@ -302,14 +312,22 @@ stage.prototype.firekey = (t) ->
     @tiles[f.1][p1.y][p1.x] = \a
     n = @nodes[f.1][p1.y][p1.x]
     if n and n.parentNode => n.parentNode.removeChild(n)
+    @nodes[f.1][p1.y][p1.x] = null
     @user.score = (@user.score or 0) + (tileinfo[ts.1.1].score)
     @snd-play \get
     @view.render!
 
+  # button
+  if ts.1.1 in <[m]> =>
+    @transform({src: \o, des: \d})
+    @transform({src: \p, des: \a})
+    @convert({f: f.1, x: p1.x, y: p1.y, src: \m, des: \n})
+    @render!
+
   # stool
   if ts.1.1 in <[e]> =>
     # obstacle in stool destination
-    if !(ts.1.2 in <[a f]>) =>
+    if !(ts.1.2 in <[a f n o]>) =>
       @snd-play \hit
       return
     # df - destination floor. dk - destination key
@@ -332,9 +350,10 @@ stage.prototype.firekey = (t) ->
     @snd-play \key
     @transform({src: \g, des: \i})
     @user.item.push 7
-    @tiles[f.1][p1.y][p1.x] = 0
+    @tiles[f.1][p1.y][p1.x] = \a
     n = @nodes[f.1][p1.y][p1.x]
     if n and n.parentNode => n.parentNode.removeChild n
+    @nodes[f.1][p1.y][p1.x] = null
 
   if ts.1.1 in <[i]> =>
     @snd-play \pass
@@ -356,5 +375,5 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-s.load {lv: 1, path: (-> "/assets/map/#it.json")}
+s.load {lv: 1, path: (-> "/assets/map/basic/#it.json")}
 #s.edit!

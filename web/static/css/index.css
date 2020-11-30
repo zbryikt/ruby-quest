@@ -183,6 +183,33 @@ body {
 .tile.stair .s {
   opacity: 0;
 }
+.tile.button .t,
+.tile.button .s,
+.tile.button .e {
+  opacity: 0;
+}
+.tile.button .b {
+  background-image: url("/assets/svg/m_button.svg");
+}
+.tile.button-pressed .t,
+.tile.button-pressed .s,
+.tile.button-pressed .e {
+  opacity: 0;
+}
+.tile.button-pressed .b {
+  background-image: url("/assets/svg/m_button-pressed.svg");
+}
+.tile.trapwall .t,
+.tile.trapwall .s,
+.tile.trapwall .e {
+  opacity: 0;
+}
+.tile.trapwall .b {
+  background-image: url("/assets/svg/m_trapwall.svg");
+}
+.tile.trapdoor > div {
+  background-image: url("/assets/svg/m_trapdoor.svg");
+}
 @-moz-keyframes walking {
   0% {
     background-position-x: 0;
