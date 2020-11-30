@@ -38,7 +38,8 @@ stage.prototype = Object.create(Object.prototype) <<< do
   reset: ->
     @user.score = 0
     @load {lv: 1}
-  snd-play: (n) ->
+  snd-play: (n,opt = {}) ->
+    if opt.loop => @snd[n].loop = true
     @snd[n].currentTime = 0
     @snd[n].play!
   set-mode: (mode = \edit) ->
@@ -114,10 +115,10 @@ stage.prototype = Object.create(Object.prototype) <<< do
       user: view.get \user
       cursor: view.get \cursor
       picked: view.get \picked
-      bgm: view.get \bgm
     @el.sample-tile.classList.remove \d-none
     @view.render!
 
+    @snd.bgm = new Audio('/assets/snd/adventure.mp3')
     @snd.get = new Audio('/assets/snd/get.ogg')
     @snd.pass = new Audio('/assets/snd/pass.ogg')
     @snd.key = new Audio('/assets/snd/key.ogg')
@@ -134,7 +135,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
       if u.dir == dir => u.moving = false
     document.addEventListener \keydown, (e) ~>
       [u,keycode] = [@user, e.which]
-      if @el.bgm.paused => @el.bgm.play!
+      if @snd.bgm.paused => @snd-play \bgm, {loop: true}
       if keycode == 82 and @mode == \play => return @restart!
       if @mode == \edit =>
         if keycode == 80 =>

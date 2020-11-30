@@ -122,7 +122,11 @@ stage.prototype = import$(Object.create(Object.prototype), {
       lv: 1
     });
   },
-  sndPlay: function(n){
+  sndPlay: function(n, opt){
+    opt == null && (opt = {});
+    if (opt.loop) {
+      this.snd[n].loop = true;
+    }
     this.snd[n].currentTime = 0;
     return this.snd[n].play();
   },
@@ -301,11 +305,11 @@ stage.prototype = import$(Object.create(Object.prototype), {
       field: view.get('field'),
       user: view.get('user'),
       cursor: view.get('cursor'),
-      picked: view.get('picked'),
-      bgm: view.get('bgm')
+      picked: view.get('picked')
     };
     this.el.sampleTile.classList.remove('d-none');
     this.view.render();
+    this.snd.bgm = new Audio('/assets/snd/adventure.mp3');
     this.snd.get = new Audio('/assets/snd/get.ogg');
     this.snd.pass = new Audio('/assets/snd/pass.ogg');
     this.snd.key = new Audio('/assets/snd/key.ogg');
@@ -332,8 +336,10 @@ stage.prototype = import$(Object.create(Object.prototype), {
     return document.addEventListener('keydown', function(e){
       var ref$, u, keycode, ref1$, delta, i, j, ks, res$, k, dir;
       ref$ = [this$.user, e.which], u = ref$[0], keycode = ref$[1];
-      if (this$.el.bgm.paused) {
-        this$.el.bgm.play();
+      if (this$.snd.bgm.paused) {
+        this$.sndPlay('bgm', {
+          loop: true
+        });
       }
       if (keycode === 82 && this$.mode === 'play') {
         return this$.restart();
