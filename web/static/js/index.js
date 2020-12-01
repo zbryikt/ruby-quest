@@ -15,7 +15,7 @@ stage = function(){
   this.loader = {};
   this.ldcv = {};
   this.snd = {};
-  this.mode = 'play';
+  this.mode = 'intro';
   return this;
 };
 stage.dim = {
@@ -150,6 +150,9 @@ stage.prototype = import$(Object.create(Object.prototype), {
       lv: 1
     });
   },
+  sndPause: function(n){
+    return this.snd[n].pause();
+  },
   sndPlay: function(n, opt){
     opt == null && (opt = {});
     if (opt.loop) {
@@ -167,6 +170,11 @@ stage.prototype = import$(Object.create(Object.prototype), {
         this.users = this.data.users;
       }
       this.mode = 'edit';
+      this.sndPause('bgm');
+      return this.render();
+    } else if (mode === 'intro') {
+      this.mode = 'intro';
+      this.sndPause('bgm');
       return this.render();
     } else {
       import$(this.user, this.data.user);
@@ -202,6 +210,20 @@ stage.prototype = import$(Object.create(Object.prototype), {
         }
       },
       handler: {
+        mapset: {
+          list: function(){
+            return ['basic'];
+          },
+          key: function(it){
+            return it;
+          },
+          handler: function(arg$){
+            var node, data;
+            node = arg$.node, data = arg$.data;
+            node.innerText = data;
+            return node.value = data;
+          }
+        },
         "on-mode": function(arg$){
           var node, mode;
           node = arg$.node;
@@ -219,10 +241,29 @@ stage.prototype = import$(Object.create(Object.prototype), {
           var node;
           node = arg$.node;
           return node.childNodes[0].setAttribute('class', (['tile'].concat([stage.tileinfo[this$.cursor.key].name])).join(' '));
+        },
+        screen: function(arg$){
+          var node, n;
+          node = arg$.node;
+          n = node.getAttribute('data-name').split(' ');
+          return node.classList.toggle('d-none', !in$(this$.mode, n));
         }
       },
       action: {
         click: {
+          start: function(){
+            var _;
+            this$.setMode('play');
+            _ = function(name){
+              return this$.load({
+                lv: 1,
+                path: function(it){
+                  return "/assets/map/" + name + "/" + it + ".json";
+                }
+              });
+            };
+            return _(view.get('selected-mapset').value);
+          },
           "go-edit": function(){
             return this$.setMode('edit');
           },
@@ -364,7 +405,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
     return document.addEventListener('keydown', function(e){
       var ref$, u, keycode, ref1$, delta, i, j, ks, res$, k, dir;
       ref$ = [this$.user, e.which], u = ref$[0], keycode = ref$[1];
-      if (this$.snd.bgm.paused) {
+      if (this$.snd.bgm.paused && this$.mode === 'play') {
         this$.sndPlay('bgm', {
           loop: true
         });
@@ -806,14 +847,13 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
-s.load({
-  lv: 1,
-  path: function(it){
-    return "/assets/map/basic/" + it + ".json";
-  }
-});
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
   return obj;
+}
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
 }

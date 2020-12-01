@@ -9,7 +9,7 @@ stage = ->
   @loader = {}
   @ldcv = {}
   @snd = {}
-  @mode = \play
+  @mode = \intro
   @
 
 stage.dim = do
@@ -42,6 +42,8 @@ stage.prototype = Object.create(Object.prototype) <<< do
   reset: ->
     @user.score = 0
     @load {lv: 1}
+  snd-pause: (n) ->
+    @snd[n].pause!
   snd-play: (n,opt = {}) ->
     if opt.loop => @snd[n].loop = true
     @snd[n].currentTime = 0
@@ -53,6 +55,11 @@ stage.prototype = Object.create(Object.prototype) <<< do
         @tiles = @data.tiles
         @users = @data.users
       @mode = \edit
+      @snd-pause \bgm
+      @render!
+    else if mode == \intro
+      @mode = \intro
+      @snd-pause \bgm
       @render!
     else
       @user <<< @data.user
@@ -70,6 +77,13 @@ stage.prototype = Object.create(Object.prototype) <<< do
         lv: ~> @lv or 1
         score: ~> @user.score or 0
       handler:
+        mapset: do
+          list: -> <[basic]>
+          key: -> it
+          handler: ({node, data}) ->
+            node.innerText = data
+            node.value = data
+
         "on-mode": ({node}) ~>
           mode = node.getAttribute \data-mode
           node.classList.toggle \d-none, (mode != @mode)
@@ -78,7 +92,16 @@ stage.prototype = Object.create(Object.prototype) <<< do
         scene: (->), lv: (->), score: (->)
         picked: ({node}) ~>
           node.childNodes.0.setAttribute \class, (<[tile]> ++ [stage.tileinfo[@cursor.key].name]).join(' ')
+        screen: ({node}) ~>
+          n = node.getAttribute(\data-name).split(' ')
+          node.classList.toggle \d-none, !(@mode in n)
+
       action: click:
+        start: ~>
+          @set-mode \play
+          _ = (name) ~>
+            @load {lv: 1, path: (-> "/assets/map/#name/#it.json")}
+          _ view.get('selected-mapset').value
         "go-edit": ~> @set-mode \edit
         "test-run": ~>
           @edit-data = cp @data
@@ -89,8 +112,6 @@ stage.prototype = Object.create(Object.prototype) <<< do
           document.body.appendChild n
           n.click!
           document.body.removeChild n
-
-
         restart: ~> @restart!
         reset: ~>
           @ldcv.finish.toggle false
@@ -140,7 +161,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
       if u.dir == dir => u.moving = false
     document.addEventListener \keydown, (e) ~>
       [u,keycode] = [@user, e.which]
-      if @snd.bgm.paused => @snd-play \bgm, {loop: true}
+      if @snd.bgm.paused and @mode == \play => @snd-play \bgm, {loop: true}
       if keycode == 82 and @mode == \play => return @restart!
       if @mode == \edit =>
         if keycode == 80 =>
@@ -375,5 +396,5 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-s.load {lv: 1, path: (-> "/assets/map/basic/#it.json")}
+#s.load {lv: 1, path: (-> "/assets/map/basic/#it.json")}
 #s.edit!
