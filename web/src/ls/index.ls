@@ -31,8 +31,9 @@ stage.tileinfo = do
   l: name: \sapphire,       through: true,  over: false, fill: false, push: false, score: 10
   m: name: \button,         through: true,  over: false, fill: false, push: false
   n: name: \button-pressed, through: true,  over: false, fill: true,  push: false
-  o: name: \trapwall,      through: true,  over: false,  fill: true, push: false
-  p: name: \trapdoor,      through: false,  over: true,  fill: false, push: false
+  o: name: \trapwall,       through: true,  over: false, fill: true, push: false
+  p: name: \trapdoor,       through: false, over: true,  fill: false, push: false
+  q: name: \amethyst,       through: true,  over: false, fill: false, push: false, score: 20
 
 
 stage.prototype = Object.create(Object.prototype) <<< do
@@ -353,6 +354,7 @@ stage.prototype.firekey = (t) ->
       return
     # df - destination floor. dk - destination key
     [df,dk] = if f.0 >= 0 and (!tileinfo[ts.0.2] or tileinfo[ts.0.2].fill) => [f.0,\c] else [f.1, \e]
+    if tileinfo[ts.0.2] and !tileinfo[ts.0.2].fill and tileinfo[ts.0.2].through => return
     @tiles[f.1][p1.y][p1.x] = \a
     @tiles[df][p2.y][p2.x] = dk
     @nodes[f.1][p1.y][p1.x].classList.remove tileinfo.e.name

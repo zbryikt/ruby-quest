@@ -135,6 +135,14 @@ stage.tileinfo = {
     over: true,
     fill: false,
     push: false
+  },
+  q: {
+    name: 'amethyst',
+    through: true,
+    over: false,
+    fill: false,
+    push: false,
+    score: 20
   }
 };
 stage.prototype = import$(Object.create(Object.prototype), {
@@ -784,6 +792,9 @@ stage.prototype.firekey = function(t){
     ref$ = f[0] >= 0 && (!tileinfo[ts[0][2]] || tileinfo[ts[0][2]].fill)
       ? [f[0], 'c']
       : [f[1], 'e'], df = ref$[0], dk = ref$[1];
+    if (tileinfo[ts[0][2]] && !tileinfo[ts[0][2]].fill && tileinfo[ts[0][2]].through) {
+      return;
+    }
     this.tiles[f[1]][p1.y][p1.x] = 'a';
     this.tiles[df][p2.y][p2.x] = dk;
     this.nodes[f[1]][p1.y][p1.x].classList.remove(tileinfo.e.name);
