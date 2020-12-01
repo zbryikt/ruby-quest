@@ -2,8 +2,12 @@
 <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 140 44" enable-background="new 0 0 140 44" xml:space="preserve">
-<polyline fill="none" stroke="#F79420" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
-	42,41 53,41 53,15 "/>
-<circle fill="#FAED23" stroke="#F79420" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="48" cy="14" r="11"/>
-<line fill="none" stroke="#F79420" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="42" y1="32" x2="53" y2="32"/>
+<line fill="none" stroke="#F79420" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="38.614201" y1="35.830006" x2="43.245201" y2="38.395603"/>
+<line fill="none" stroke="#F79420" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="42.096439" y1="29.544426" x2="49.640865" y2="33.724072"/>
+<circle fill="none" stroke="#FED111" stroke-width="4" stroke-miterlimit="10" cx="51.89539" cy="11.856934" r="7.5"/>
+<line fill="none" stroke="#FED111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="48.211357" y1="18.506758" x2="36.220673" y2="40.150417"/>
+<path opacity="0.3" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+	M51.895386,4.356934c-2.950806,0-5.496338,1.708374-6.720581,4.186218"/>
+<path opacity="0.3" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+	M58.319336,15.712952c0.628555-1.044654,1.015911-2.250859,1.069614-3.545275"/>
 </svg>

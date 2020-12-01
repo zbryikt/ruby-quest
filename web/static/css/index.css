@@ -111,17 +111,8 @@ body {
 .tile.wall > div {
   background-image: url("/assets/svg/m_wall.svg");
 }
-.tile.stool .t {
-  background: #402010;
-  border-radius: 6px;
-}
-.tile.stool .b {
-  background: #402010;
-  border-radius: 6px;
-}
-.tile.stool .s {
-  background: #804020;
-  border-radius: 0 0 6px 6px;
+.tile.stool > div {
+  background-image: url("/assets/svg/m_stool.svg");
 }
 .tile.grass > div {
   opacity: 0.4;
