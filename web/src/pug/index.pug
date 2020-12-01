@@ -7,6 +7,11 @@ block head
       background: #212529
       /* background: url(/assets/img/cloud.svg) center center */
 block body
+  .w-100.h-100.d-flex.justify-content-center.align-items-center.flex-column.text-light
+    div
+      .pt-2.pb-3.px-3.text-sm.rounded.text-light.shadow.d-flex.align-items-center.mb-4(
+      style="background:url(/assets/img/maze.svg);"): img(src="/assets/img/banner.svg")
+      .text-center: .text-lg 選擇關卡
   .tile.d-none(ld="sample-tile") #[.b]#[.e]#[.t]#[.s]
   .w-100.h-100.d-flex.justify-content-center.align-items-center.flex-column
     .scene(ld="scene")
