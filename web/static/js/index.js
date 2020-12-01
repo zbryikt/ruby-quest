@@ -142,7 +142,15 @@ stage.tileinfo = {
     over: false,
     fill: false,
     push: false,
-    score: 20
+    score: 100
+  },
+  r: {
+    name: 'emerald',
+    through: true,
+    over: false,
+    fill: false,
+    push: false,
+    score: 300
   }
 };
 stage.prototype = import$(Object.create(Object.prototype), {
@@ -392,6 +400,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
     this.snd.key = new Audio('/assets/snd/key.ogg');
     this.snd.push = new Audio('/assets/snd/push.ogg');
     this.snd.hit = new Audio('/assets/snd/hit.ogg');
+    this.snd.press = new Audio('/assets/snd/press.ogg');
     requestAnimationFrame(function(t){
       return this$.firekey(t);
     });
@@ -782,6 +791,7 @@ stage.prototype.firekey = function(t){
       src: 'm',
       des: 'n'
     });
+    this.sndPlay('press');
     this.render();
   }
   if (ts[1][1] === 'e') {

@@ -204,6 +204,9 @@ body {
 .tile.amethyst > div {
   background-image: url("/assets/svg/m_amethyst.svg");
 }
+.tile.emerald > div {
+  background-image: url("/assets/svg/m_emerald.svg");
+}
 @-moz-keyframes walking {
   0% {
     background-position-x: 0;

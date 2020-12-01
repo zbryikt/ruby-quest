@@ -33,7 +33,8 @@ stage.tileinfo = do
   n: name: \button-pressed, through: true,  over: false, fill: true,  push: false
   o: name: \trapwall,       through: true,  over: false, fill: true, push: false
   p: name: \trapdoor,       through: false, over: true,  fill: false, push: false
-  q: name: \amethyst,       through: true,  over: false, fill: false, push: false, score: 20
+  q: name: \amethyst,       through: true,  over: false, fill: false, push: false, score: 100
+  r: name: \emerald,        through: true,  over: false, fill: false, push: false, score: 300
 
 
 stage.prototype = Object.create(Object.prototype) <<< do
@@ -151,6 +152,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
     @snd.key = new Audio('/assets/snd/key.ogg')
     @snd.push = new Audio('/assets/snd/push.ogg')
     @snd.hit = new Audio('/assets/snd/hit.ogg')
+    @snd.press = new Audio('/assets/snd/press.ogg')
 
     requestAnimationFrame (t) ~> @firekey t
     document.addEventListener \keyup, (e) ~>
@@ -344,6 +346,7 @@ stage.prototype.firekey = (t) ->
     @transform({src: \o, des: \d})
     @transform({src: \p, des: \a})
     @convert({f: f.1, x: p1.x, y: p1.y, src: \m, des: \n})
+    @snd-play \press
     @render!
 
   # stool
@@ -398,5 +401,5 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-#s.load {lv: 1, path: (-> "/assets/map/basic/#it.json")}
+#s.load {lv: 13, path: (-> "/assets/map/basic/#it.json")}
 #s.edit!
