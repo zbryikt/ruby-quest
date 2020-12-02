@@ -142,15 +142,23 @@ stage.tileinfo = {
     over: false,
     fill: false,
     push: false,
-    score: 100
+    score: 250
   },
   r: {
+    name: 'topaz',
+    through: true,
+    over: false,
+    fill: false,
+    push: false,
+    score: 1250
+  },
+  s: {
     name: 'emerald',
     through: true,
     over: false,
     fill: false,
     push: false,
-    score: 300
+    score: 50
   }
 };
 stage.prototype = import$(Object.create(Object.prototype), {

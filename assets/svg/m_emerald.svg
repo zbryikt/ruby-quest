@@ -2,22 +2,26 @@
 <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 140 44" enable-background="new 0 0 140 44" xml:space="preserve">
+<g class="ldl-layer" transform="matrix(1 0 0 0.9999999999999998 -7.105427357601002e-15 8.881784197001252e-16) matrix(1 0 0 1 0 0)"><g class="ldl-ani" style="transform: scale(0.91); transform-origin: 48px 40px; animation: 1s linear 0s infinite normal forwards running breath-e9d2c079-4008-45dc-9e63-d90a51444cc3;"><ellipse ry="2.535681" rx="8.193611" cy="40" cx="48" opacity="0.2" style="cx: 48px; cy: 38.3; opacity: 0.2; rx: 8.19361px; ry: 2.53568px;"></ellipse></g></g>
 
-<g class="ldl-layer" transform="matrix(1 0 0 0.9999999999999998 -7.105427357601002e-15 8.881784197001252e-16) matrix(1 0 0 1 0 0)"><g class="ldl-ani" style="transform: scale(0.91); transform-origin: 48px 37px; animation: 1s linear 0s infinite normal forwards running breath-e9d2c079-4008-45dc-9e63-d90a51444cc3;"><ellipse ry="2.535681" rx="8.193611" cy="37" cx="48" opacity="0.2" style="cx: 48px; cy: 38.3; opacity: 0.2; rx: 8.19361px; ry: 2.53568px;"></ellipse></g></g>
 <g class="ldl-layer" transform="matrix(1 0 0 0.9999999999999998 -7.105427357601002e-15 2.6645352591003757e-15) matrix(1 0 0 1 0 0)"><g class="ldl-ani" style="transform-origin: 48px 21.9283px; transform: translate(0px, -1px); animation: 1s linear 0s infinite normal forwards running wander-v-2c059fc0-6710-423b-a833-60130f5ceaee;">
-<g>
-	<polygon fill="#F7EC13" points="64.000206,16.990961 48,36.491455 31.999794,16.990961 48,0.990961 	"/>
-	<polygon fill="#FBB03A" points="57.918385,17.656267 48,29.744215 38.081615,17.656267 48,7.738202 	"/>
-	<polygon opacity="0.5" fill="#EC2027" points="31.999807,16.990969 48,36.491451 48.10939,36.358131 48.10939,20.720499 	"/>
-	<polygon opacity="0.5" fill="#F79420" points="48.10939,20.720499 48.10939,36.358131 63.948914,17.053497 	"/>
-	<polygon opacity="0.5" fill="#FAED23" points="48.10939,1.100301 48,0.99091 31.999807,16.990969 48.10939,20.720499 	"/>
-	<polygon opacity="0.5" fill="#F15A26" points="48.10939,1.100301 48.10939,20.720499 63.948914,17.053497 64.000191,16.990969 	"/>
-	<path opacity="0.3" fill="#FFFFFF" d="M48.10939,25.64962c-2.191113,0.700569-4.528507,1.091555-6.964611,1.091555
-		c-0.402599,0-0.795227-0.037676-1.192558-0.058115L48,36.491451l0.10939-0.13332V25.64962z"/>
-	<path opacity="0.3" fill="#FFFFFF" d="M48.10939,36.358131l0.959244-1.169041l7.882195-9.606558
-		c-2.627113,1.565081-5.623352,2.668884-8.841438,3.213913V36.358131z"/>
-</g>
-</g></g>
+<g opacity="0.9">
+	<polygon fill="#6ABD45" points="43.686279,7.423035 40,10.601135 40,29.398804 43.686279,32.576904 52.313721,32.576904 
+		56,29.398804 56,10.601135 52.313721,7.423035 	"/>
+	<polygon fill="#3BB54A" points="43.686279,7.423035 42.615234,2 35,8.789429 40,10.601135 	"/>
+	<polygon fill="#009247" points="40,10.601135 35,8.789429 35,31.210571 40,29.398804 	"/>
+	<polygon fill="#C4DD83" points="52.313721,7.423035 53.384766,2 42.615234,2 43.686279,7.423035 	"/>
+	<polygon fill="#E6E6E6" points="56,10.601135 61,8.789429 53.384766,2 52.313721,7.423035 	"/>
+	<polygon fill="#006937" points="43.686279,32.576904 42.615234,38 53.384766,38 52.313721,32.576904 	"/>
+	<polygon fill="#3BB54A" points="40,29.398804 35,31.210571 42.615234,38 43.686279,32.576904 	"/>
+	<polygon fill="#3BB54A" points="56,10.601135 56,29.398804 61,31.210571 61,8.789429 	"/>
+	<polygon fill="#009247" points="52.313721,32.576904 53.384766,38 61,31.210571 56,29.398804 	"/>
+	<polygon opacity="0.2" fill="#F7EC13" points="35,8.789429 35,21 48,21 48,2 42.615234,2 	"/>
+	<polygon opacity="0.2" fill="#F7EC13" points="48,38 53.384766,38 61,31.210571 61,21 48,21 	"/>
+	<polygon opacity="0.3" fill="#C4DD83" points="40,21 40,27 56,17 56,14 	"/>
+	<polygon opacity="0.3" fill="#C4DD83" points="40,15 40,19 56,13 56,11 	"/>
+</g></g></g>
+
 <path style="animation: 1s linear 0s infinite normal forwards running blink-dd151398-1545-4d6e-9fb5-9f967decae16;" fill="#FFD113" d="M57.460072,7.455489c-0.931778-0.374649-1.675465-1.118337-2.050114-2.050115
 	c-0.099037-0.246308-0.431274-0.246308-0.530308,0c-0.374649,0.931778-1.11834,1.675466-2.050117,2.050115
 	c-0.246307,0.099036-0.246307,0.431273,0,0.530308c0.931778,0.374649,1.675468,1.118337,2.050117,2.050115

@@ -207,6 +207,9 @@ body {
 .tile.emerald > div {
   background-image: url("/assets/svg/m_emerald.svg");
 }
+.tile.topaz > div {
+  background-image: url("/assets/svg/m_topaz.svg");
+}
 @-moz-keyframes walking {
   0% {
     background-position-x: 0;

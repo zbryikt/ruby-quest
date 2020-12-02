@@ -33,8 +33,9 @@ stage.tileinfo = do
   n: name: \button-pressed, through: true,  over: false, fill: true,  push: false
   o: name: \trapwall,       through: true,  over: false, fill: true, push: false
   p: name: \trapdoor,       through: false, over: true,  fill: false, push: false
-  q: name: \amethyst,       through: true,  over: false, fill: false, push: false, score: 100
-  r: name: \emerald,        through: true,  over: false, fill: false, push: false, score: 300
+  q: name: \amethyst,       through: true,  over: false, fill: false, push: false, score: 250
+  r: name: \topaz,          through: true,  over: false, fill: false, push: false, score: 1250
+  s: name: \emerald,        through: true,  over: false, fill: false, push: false, score: 50
 
 
 stage.prototype = Object.create(Object.prototype) <<< do
