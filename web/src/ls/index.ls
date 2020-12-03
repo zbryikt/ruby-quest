@@ -402,5 +402,5 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-#s.load {lv: 13, path: (-> "/assets/map/basic/#it.json")}
+#s.load {lv: 18, path: (-> "/assets/map/basic/#it.json")}
 #s.edit!
