@@ -81,7 +81,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
         score: ~> @user.score or 0
       handler:
         mapset: do
-          list: -> <[basic]>
+          list: -> <[basic tommy]>
           key: -> it
           handler: ({node, data}) ->
             node.innerText = data
@@ -402,5 +402,5 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-#s.load {lv: 18, path: (-> "/assets/map/basic/#it.json")}
+s.load {lv: 17, path: (-> "/assets/map/tommy/#it.json")}
 #s.edit!

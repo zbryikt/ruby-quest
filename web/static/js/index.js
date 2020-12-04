@@ -236,7 +236,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
       handler: {
         mapset: {
           list: function(){
-            return ['basic'];
+            return ['basic', 'tommy'];
           },
           key: function(it){
             return it;
@@ -876,6 +876,12 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
+s.load({
+  lv: 17,
+  path: function(it){
+    return "/assets/map/tommy/" + it + ".json";
+  }
+});
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
