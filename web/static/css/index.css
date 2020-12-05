@@ -115,16 +115,7 @@ body {
   background-image: url("/assets/svg/m_stool.svg");
 }
 .tile.grass > div {
-  opacity: 0.4;
-}
-.tile.grass .t {
-  background: #206020;
-}
-.tile.grass .b {
-  background: #206020;
-}
-.tile.grass .s {
-  background: #104010;
+  background-image: url("/assets/svg/m_grass.svg");
 }
 .tile.door > div {
   background-image: url("/assets/svg/m_door.svg");
@@ -209,6 +200,9 @@ body {
 }
 .tile.topaz > div {
   background-image: url("/assets/svg/m_topaz.svg");
+}
+.tile.spike > div {
+  background-image: url("/assets/svg/m_spike.svg");
 }
 @-moz-keyframes walking {
   0% {

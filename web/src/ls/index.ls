@@ -36,6 +36,7 @@ stage.tileinfo = do
   q: name: \amethyst,       through: true,  over: false, fill: false, push: false, score: 250
   r: name: \topaz,          through: true,  over: false, fill: false, push: false, score: 1250
   s: name: \emerald,        through: true,  over: false, fill: false, push: false, score: 50
+  t: name: \spike,          through: false, over: false, fill: false, push: false
 
 
 stage.prototype = Object.create(Object.prototype) <<< do
@@ -413,4 +414,4 @@ stage.prototype.firekey = (t) ->
 s = new stage!
 s.init!
 #s.load {lv: 17, path: (-> "/assets/map/tommy/#it.json")}
-#s.edit!
+s.edit!

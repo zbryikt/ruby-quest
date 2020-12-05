@@ -161,6 +161,13 @@ stage.tileinfo = {
     fill: false,
     push: false,
     score: 50
+  },
+  t: {
+    name: 'spike',
+    through: false,
+    over: false,
+    fill: false,
+    push: false
   }
 };
 stage.prototype = import$(Object.create(Object.prototype), {
@@ -896,6 +903,7 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
+s.edit();
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
