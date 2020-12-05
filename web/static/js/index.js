@@ -5,6 +5,9 @@ cp = function(it){
 stage = function(){
   this.data = {};
   this.dim = {};
+  this.mapsets = {
+    list: []
+  };
   this.user = {
     item: []
   };
@@ -12,7 +15,6 @@ stage = function(){
     key: 'c'
   };
   this.lv = 0;
-  this.loader = {};
   this.ldcv = {};
   this.snd = {};
   this.mode = 'intro';
@@ -208,6 +210,10 @@ stage.prototype = import$(Object.create(Object.prototype), {
   },
   init: function(){
     var view, this$ = this;
+    this.ldld = new ldLoader({
+      'class': 'ldld full'
+    });
+    this.ldld.on();
     this.view = view = new ldView({
       initRender: false,
       root: document.body,
@@ -227,7 +233,11 @@ stage.prototype = import$(Object.create(Object.prototype), {
       },
       text: {
         lv: function(){
-          return this$.lv || 1;
+          if (this$.lv != null) {
+            return this$.lv + 1;
+          } else {
+            return '-';
+          }
         },
         score: function(){
           return this$.user.score || 0;
@@ -236,16 +246,17 @@ stage.prototype = import$(Object.create(Object.prototype), {
       handler: {
         mapset: {
           list: function(){
-            return ['basic', 'tommy'];
+            var ref$;
+            return (ref$ = this$.mapsets).list || (ref$.list = []);
           },
           key: function(it){
-            return it;
+            return it.name;
           },
           handler: function(arg$){
             var node, data;
             node = arg$.node, data = arg$.data;
-            node.innerText = data;
-            return node.value = data;
+            node.innerText = data.name;
+            return node.value = data.id;
           }
         },
         "on-mode": function(arg$){
@@ -276,17 +287,19 @@ stage.prototype = import$(Object.create(Object.prototype), {
       action: {
         click: {
           start: function(){
-            var _;
+            var mapsetName;
             this$.setMode('play');
-            _ = function(name){
+            mapsetName = view.get('selected-mapset').value;
+            return ld$.fetch("/assets/map/" + mapsetName + "/index.json", {
+              method: 'GET'
+            }, {
+              type: 'json'
+            }).then(function(it){
+              this$.mapset = it;
               return this$.load({
-                lv: 1,
-                path: function(it){
-                  return "/assets/map/" + name + "/" + it + ".json";
-                }
+                lv: 0
               });
-            };
-            return _(view.get('selected-mapset').value);
+            });
           },
           "go-edit": function(){
             return this$.setMode('edit');
@@ -427,7 +440,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
         return u.moving = false;
       }
     });
-    return document.addEventListener('keydown', function(e){
+    document.addEventListener('keydown', function(e){
       var ref$, u, keycode, ref1$, delta, i, j, ks, res$, k, dir;
       ref$ = [this$.user, e.which], u = ref$[0], keycode = ref$[1];
       if (this$.snd.bgm.paused && this$.mode === 'play') {
@@ -510,6 +523,15 @@ stage.prototype = import$(Object.create(Object.prototype), {
       u.dir = dir;
       u.moving = true;
       return this$.el.user.style.backgroundPositionY = -stage.dim.size * 1.4964 * [2, 1, 3, 0][dir] + "px";
+    });
+    return ld$.fetch("/assets/map/index.json", {
+      method: "GET"
+    }, {
+      type: "json"
+    }).then(function(it){
+      this$.mapsets = it;
+      this$.view.render('mapset');
+      return this$.ldld.off();
     });
   },
   zIndex: function(arg$){
@@ -625,15 +647,13 @@ stage.prototype = import$(Object.create(Object.prototype), {
     return this.render();
   },
   load: function(arg$){
-    var lv, path, mode, this$ = this;
+    var lv, path, mode, map, this$ = this;
     lv = arg$.lv, path = arg$.path, mode = arg$.mode;
-    path = path
-      ? path
-      : this.loader.path;
-    this.loader.path = path;
-    return ld$.fetch(path
-      ? path(lv)
-      : "/js/map/" + lv + ".js", {}, {
+    if (!(map = this.mapset.list[lv])) {
+      return this.ldcv.finish.toggle(true);
+    }
+    path = "/assets/map/" + this.mapset.id + "/" + map.fn + ".json";
+    return ld$.fetch(path, {}, {
       type: 'text'
     }).then(function(ret){
       var e;
@@ -691,7 +711,7 @@ stage.prototype.firekey = function(t){
   requestAnimationFrame(function(t){
     return this$.firekey(t);
   });
-  if (!u.moving || (u.lastMoveTime && t - u.lastMoveTime < 100)) {
+  if (!u.moving || (u.lastMoveTime && t - u.lastMoveTime < 160)) {
     return;
   }
   u.lastMoveTime = t;
@@ -876,12 +896,6 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
-s.load({
-  lv: 17,
-  path: function(it){
-    return "/assets/map/tommy/" + it + ".json";
-  }
-});
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];

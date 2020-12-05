@@ -17,7 +17,7 @@ body {
   position: absolute;
   width: 32px;
   height: 44px;
-  transition: left 0.1s linear, top 0.1s linear;
+  transition: left 0.16s linear, top 0.16s linear;
   border-radius: 9px;
   background: url("/assets/img/user-sm.png");
   background-size: 128px 191.5392px;
@@ -45,7 +45,7 @@ body {
   position: absolute;
   width: 32px;
   height: 32px;
-  transition: left 0.1s linear, top 0.1s linear;
+  transition: left 0.16s linear, top 0.16s linear;
 }
 .tile > div {
   position: absolute;

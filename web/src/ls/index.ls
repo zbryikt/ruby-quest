@@ -3,10 +3,10 @@ cp = -> JSON.parse(JSON.stringify(it))
 stage = ->
   @data = {}
   @dim = {}
+  @mapsets = {list: []}
   @user = {item: []}
   @cursor = {key: \c}
   @lv = 0
-  @loader = {}
   @ldcv = {}
   @snd = {}
   @mode = \intro
@@ -70,6 +70,8 @@ stage.prototype = Object.create(Object.prototype) <<< do
       @render!
 
   init: ->
+    @ldld = new ldLoader class: 'ldld full'
+    @ldld.on!
     @view = view = new ldView do
       init-render: false
       root: document.body
@@ -77,15 +79,15 @@ stage.prototype = Object.create(Object.prototype) <<< do
         finish: ({node}) ~> @ldcv.finish = new ldCover {root: node}
         picked: ({node}) ~> node.appendChild @el.sample-tile.cloneNode true
       text:
-        lv: ~> @lv or 1
+        lv: ~> if @lv? => (@lv + 1) else '-'
         score: ~> @user.score or 0
       handler:
         mapset: do
-          list: -> <[basic tommy]>
-          key: -> it
+          list: ~> @mapsets.[]list
+          key: -> it.name
           handler: ({node, data}) ->
-            node.innerText = data
-            node.value = data
+            node.innerText = data.name
+            node.value = data.id
 
         "on-mode": ({node}) ~>
           mode = node.getAttribute \data-mode
@@ -102,9 +104,11 @@ stage.prototype = Object.create(Object.prototype) <<< do
       action: click:
         start: ~>
           @set-mode \play
-          _ = (name) ~>
-            @load {lv: 1, path: (-> "/assets/map/#name/#it.json")}
-          _ view.get('selected-mapset').value
+          mapset-name = view.get('selected-mapset').value
+          ld$.fetch "/assets/map/#mapset-name/index.json", {method: \GET}, {type: \json}
+            .then ~>
+              @mapset = it
+              @load {lv: 0}
         "go-edit": ~> @set-mode \edit
         "test-run": ~>
           @edit-data = cp @data
@@ -199,6 +203,12 @@ stage.prototype = Object.create(Object.prototype) <<< do
       u <<< dir: dir, moving: true
       @el.user.style.backgroundPositionY = "#{-stage.dim.size * 1.4964 * ([2 1 3 0][dir])}px"
 
+    ld$.fetch "/assets/map/index.json", {method: "GET"}, {type: "json"}
+      .then ~>
+        @mapsets = it
+        @view.render \mapset
+        @ldld.off!
+
 
   z-index: ({x,y,f,p}) -> (f * @dim.w * @dim.h + y) * 2 + (if p => 1 else 0)
   render-user: ->
@@ -258,9 +268,9 @@ stage.prototype = Object.create(Object.prototype) <<< do
     @render!
 
   load: ({lv, path, mode}) ->
-    path = if path => path else @loader.path 
-    @loader.path = path
-    ld$.fetch (if path => path(lv) else "/js/map/#lv.js"), {}, {type: \text}
+    if !(map = @mapset.list[lv]) => return @ldcv.finish.toggle true
+    path = "/assets/map/#{@mapset.id}/#{map.fn}.json"
+    ld$.fetch path, {}, {type: \text}
       .then (ret) ~>
         try
           @data = JSON.parse(ret)
@@ -291,7 +301,7 @@ stage.prototype.firekey = (t) ->
   [tileinfo,u,apply-default] = [stage.tileinfo, @user, true]
   [block-size,block-vp] = [stage.dim.size, stage.dim.vp]
   requestAnimationFrame (t) ~> @firekey t
-  if !u.moving or (u.last-move-time and (t - u.last-move-time) < 100) => return 
+  if !u.moving or (u.last-move-time and (t - u.last-move-time) < 160) => return 
 
   u.last-move-time = t
   [dx, dy] = switch u.dir
@@ -402,5 +412,5 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-s.load {lv: 17, path: (-> "/assets/map/tommy/#it.json")}
+#s.load {lv: 17, path: (-> "/assets/map/tommy/#it.json")}
 #s.edit!
