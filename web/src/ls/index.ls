@@ -45,7 +45,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
     @load {lv: @lv}
   reset: ->
     @user.score = 0
-    @load {lv: 1}
+    @load {lv: 0}
   snd-pause: (n) ->
     @snd[n].pause!
   snd-play: (n,opt = {}) ->
@@ -414,4 +414,4 @@ stage.prototype.firekey = (t) ->
 s = new stage!
 s.init!
 #s.load {lv: 17, path: (-> "/assets/map/tommy/#it.json")}
-s.edit!
+#s.edit!

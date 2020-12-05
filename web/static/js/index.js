@@ -180,7 +180,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
   reset: function(){
     this.user.score = 0;
     return this.load({
-      lv: 1
+      lv: 0
     });
   },
   sndPause: function(n){
@@ -903,7 +903,6 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
-s.edit();
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
