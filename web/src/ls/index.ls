@@ -106,7 +106,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
         start: ~>
           @set-mode \play
           mapset-name = view.get('selected-mapset').value
-          ld$.fetch "/assets/map/#mapset-name/index.json", {method: \GET}, {type: \json}
+          ld$.fetch "assets/map/#mapset-name/index.json", {method: \GET}, {type: \json}
             .then ~>
               @mapset = it
               @load {lv: 0}
@@ -152,13 +152,13 @@ stage.prototype = Object.create(Object.prototype) <<< do
     @el.sample-tile.classList.remove \d-none
     @view.render!
 
-    @snd.bgm = new Audio('/assets/snd/adventure.mp3')
-    @snd.get = new Audio('/assets/snd/get.ogg')
-    @snd.pass = new Audio('/assets/snd/pass.ogg')
-    @snd.key = new Audio('/assets/snd/key.ogg')
-    @snd.push = new Audio('/assets/snd/push.ogg')
-    @snd.hit = new Audio('/assets/snd/hit.ogg')
-    @snd.press = new Audio('/assets/snd/press.ogg')
+    @snd.bgm = new Audio('assets/snd/adventure.mp3')
+    @snd.get = new Audio('assets/snd/get.ogg')
+    @snd.pass = new Audio('assets/snd/pass.ogg')
+    @snd.key = new Audio('assets/snd/key.ogg')
+    @snd.push = new Audio('assets/snd/push.ogg')
+    @snd.hit = new Audio('assets/snd/hit.ogg')
+    @snd.press = new Audio('assets/snd/press.ogg')
 
     requestAnimationFrame (t) ~> @firekey t
     document.addEventListener \keyup, (e) ~>
@@ -204,7 +204,7 @@ stage.prototype = Object.create(Object.prototype) <<< do
       u <<< dir: dir, moving: true
       @el.user.style.backgroundPositionY = "#{-stage.dim.size * 1.4964 * ([2 1 3 0][dir])}px"
 
-    ld$.fetch "/assets/map/index.json", {method: "GET"}, {type: "json"}
+    ld$.fetch "assets/map/index.json", {method: "GET"}, {type: "json"}
       .then ~>
         @mapsets = it
         @view.render \mapset
@@ -270,13 +270,13 @@ stage.prototype = Object.create(Object.prototype) <<< do
 
   load: ({lv, path, mode, mapset}) ->
     p = if mapset =>
-      ld$.fetch "/assets/map/#mapset/index.json", {method: \GET}, {type: \json}
+      ld$.fetch "assets/map/#mapset/index.json", {method: \GET}, {type: \json}
         .then ~> @mapset = it
     else Promise.resolve!
     p
       .then ~>
         if !(map = @mapset.list[lv]) => return @ldcv.finish.toggle true
-        path = "/assets/map/#{@mapset.id}/#{map.fn}.json"
+        path = "assets/map/#{@mapset.id}/#{map.fn}.json"
         ld$.fetch path, {}, {type: \text}
       .then (ret) ~>
         try

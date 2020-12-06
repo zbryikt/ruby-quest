@@ -297,7 +297,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
             var mapsetName;
             this$.setMode('play');
             mapsetName = view.get('selected-mapset').value;
-            return ld$.fetch("/assets/map/" + mapsetName + "/index.json", {
+            return ld$.fetch("assets/map/" + mapsetName + "/index.json", {
               method: 'GET'
             }, {
               type: 'json'
@@ -422,13 +422,13 @@ stage.prototype = import$(Object.create(Object.prototype), {
     };
     this.el.sampleTile.classList.remove('d-none');
     this.view.render();
-    this.snd.bgm = new Audio('/assets/snd/adventure.mp3');
-    this.snd.get = new Audio('/assets/snd/get.ogg');
-    this.snd.pass = new Audio('/assets/snd/pass.ogg');
-    this.snd.key = new Audio('/assets/snd/key.ogg');
-    this.snd.push = new Audio('/assets/snd/push.ogg');
-    this.snd.hit = new Audio('/assets/snd/hit.ogg');
-    this.snd.press = new Audio('/assets/snd/press.ogg');
+    this.snd.bgm = new Audio('assets/snd/adventure.mp3');
+    this.snd.get = new Audio('assets/snd/get.ogg');
+    this.snd.pass = new Audio('assets/snd/pass.ogg');
+    this.snd.key = new Audio('assets/snd/key.ogg');
+    this.snd.push = new Audio('assets/snd/push.ogg');
+    this.snd.hit = new Audio('assets/snd/hit.ogg');
+    this.snd.press = new Audio('assets/snd/press.ogg');
     requestAnimationFrame(function(t){
       return this$.firekey(t);
     });
@@ -531,7 +531,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
       u.moving = true;
       return this$.el.user.style.backgroundPositionY = -stage.dim.size * 1.4964 * [2, 1, 3, 0][dir] + "px";
     });
-    return ld$.fetch("/assets/map/index.json", {
+    return ld$.fetch("assets/map/index.json", {
       method: "GET"
     }, {
       type: "json"
@@ -657,7 +657,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
     var lv, path, mode, mapset, p, this$ = this;
     lv = arg$.lv, path = arg$.path, mode = arg$.mode, mapset = arg$.mapset;
     p = mapset
-      ? ld$.fetch("/assets/map/" + mapset + "/index.json", {
+      ? ld$.fetch("assets/map/" + mapset + "/index.json", {
         method: 'GET'
       }, {
         type: 'json'
@@ -670,7 +670,7 @@ stage.prototype = import$(Object.create(Object.prototype), {
       if (!(map = this$.mapset.list[lv])) {
         return this$.ldcv.finish.toggle(true);
       }
-      path = "/assets/map/" + this$.mapset.id + "/" + map.fn + ".json";
+      path = "assets/map/" + this$.mapset.id + "/" + map.fn + ".json";
       return ld$.fetch(path, {}, {
         type: 'text'
       });
