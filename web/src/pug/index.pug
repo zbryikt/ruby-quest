@@ -10,7 +10,7 @@ block body
   .w-100.h-100(ld="screen",data-name="intro")
     .w-100.h-100.d-flex.justify-content-center.align-items-center.flex-column.text-light: div
       .pt-2.pb-3.px-3.text-sm.rounded.text-light.shadow.d-flex.align-items-center.mb-4(
-      style="background:url(/assets/img/maze.svg);"): img(src="/assets/img/banner.svg")
+      style="background:url(assets/img/maze.svg);"): img(src="assets/img/banner.svg")
       .text-center
         .text-lg.mb-2 選擇關卡
         .d-flex
@@ -61,8 +61,8 @@ block body
 
   .ldcv(ld="finish"): .w-640.base: .inner.card: .card-body
     .text-center
-      img.mb-4(src="/assets/img/cheers.svg",style="width:96px")
-      div: img(src="/assets/img/finish.svg")
+      img.mb-4(src="assets/img/cheers.svg",style="width:96px")
+      div: img(src="assets/img/finish.svg")
     .m-4.text-center.text-lg
       p 恭喜你破關！你的總得分為：
       .m-4.font-weight-bold: h1.text-success #[span(ld="score")] 
