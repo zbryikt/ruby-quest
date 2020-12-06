@@ -19,7 +19,7 @@ body {
   height: 44px;
   transition: left 0.16s linear, top 0.16s linear;
   border-radius: 9px;
-  background: url("/assets/img/user-sm.png");
+  background: url("https://i.pinimg.com/564x/7d/59/5a/7d595a64c99a634d94759de8096cca14.jpg");
   background-size: 128px 191.5392px;
   animation: walking 1s infinite steps(1, end);
 }
@@ -91,34 +91,34 @@ body {
   border-radius: 0;
 }
 .tile.bedrock .t {
-  background-image: url("/assets/svg/m_bedrock.svg");
+  background-image: url("../assets/svg/m_bedrock.svg");
 }
 .tile.bedrock .b {
-  background-image: url("/assets/svg/m_bedrock.svg");
+  background-image: url("../assets/svg/m_bedrock.svg");
 }
 .tile.bedrock .b {
-  background-image: url("/assets/svg/m_bedrock.svg");
+  background-image: url("../assets/svg/m_bedrock.svg");
 }
 .tile.earth .t {
-  background-image: url("/assets/svg/m_earth.svg");
+  background-image: url("../assets/svg/m_earth.svg");
 }
 .tile.earth .b {
-  background-image: url("/assets/svg/m_earth.svg");
+  background-image: url("../assets/svg/m_earth.svg");
 }
 .tile.earth .s {
-  background-image: url("/assets/svg/m_earth.svg");
+  background-image: url("../assets/svg/m_earth.svg");
 }
 .tile.wall > div {
-  background-image: url("/assets/svg/m_wall.svg");
+  background-image: url("../assets/svg/m_wall.svg");
 }
 .tile.stool > div {
-  background-image: url("/assets/svg/m_stool.svg");
+  background-image: url("../assets/svg/m_stool.svg");
 }
 .tile.grass > div {
-  background-image: url("/assets/svg/m_grass.svg");
+  background-image: url("../assets/svg/m_grass.svg");
 }
 .tile.door > div {
-  background-image: url("/assets/svg/m_door.svg");
+  background-image: url("../assets/svg/m_door.svg");
 }
 .tile.door .t {
   opacity: 0;
@@ -130,7 +130,7 @@ body {
   opacity: 0;
 }
 .tile.exit > div {
-  background-image: url("/assets/svg/m_exit.svg");
+  background-image: url("../assets/svg/m_exit.svg");
 }
 .tile.exit .t {
   opacity: 0;
@@ -142,10 +142,10 @@ body {
   opacity: 0;
 }
 .tile.key > div {
-  background-image: url("/assets/svg/m_key.svg");
+  background-image: url("../assets/svg/m_key.svg");
 }
 .tile.gravel > div {
-  background-image: url("/assets/svg/m_gravel.svg");
+  background-image: url("../assets/svg/m_gravel.svg");
 }
 .tile.gravel .t {
   opacity: 0;
@@ -154,13 +154,13 @@ body {
   opacity: 0;
 }
 .tile.sapphire > div {
-  background-image: url("/assets/svg/m_sapphire.svg");
+  background-image: url("../assets/svg/m_sapphire.svg");
 }
 .tile.stair .t {
   opacity: 0;
 }
 .tile.stair .e {
-  background-image: url("/assets/svg/m_stair.svg");
+  background-image: url("../assets/svg/m_stair.svg");
 }
 .tile.stair .s {
   opacity: 0;
@@ -171,7 +171,7 @@ body {
   opacity: 0;
 }
 .tile.button .b {
-  background-image: url("/assets/svg/m_button.svg");
+  background-image: url("../assets/svg/m_button.svg");
 }
 .tile.button-pressed .t,
 .tile.button-pressed .s,
@@ -179,7 +179,7 @@ body {
   opacity: 0;
 }
 .tile.button-pressed .b {
-  background-image: url("/assets/svg/m_button-pressed.svg");
+  background-image: url("../assets/svg/m_button-pressed.svg");
 }
 .tile.trapwall .t,
 .tile.trapwall .s,
@@ -187,22 +187,22 @@ body {
   opacity: 0;
 }
 .tile.trapwall .b {
-  background-image: url("/assets/svg/m_trapwall.svg");
+  background-image: url("../assets/svg/m_trapwall.svg");
 }
 .tile.trapdoor > div {
-  background-image: url("/assets/svg/m_trapdoor.svg");
+  background-image: url("../assets/svg/m_trapdoor.svg");
 }
 .tile.amethyst > div {
-  background-image: url("/assets/svg/m_amethyst.svg");
+  background-image: url("../assets/svg/m_amethyst.svg");
 }
 .tile.emerald > div {
-  background-image: url("/assets/svg/m_emerald.svg");
+  background-image: url("../assets/svg/m_emerald.svg");
 }
 .tile.topaz > div {
-  background-image: url("/assets/svg/m_topaz.svg");
+  background-image: url("../assets/svg/m_topaz.svg");
 }
 .tile.spike > div {
-  background-image: url("/assets/svg/m_spike.svg");
+  background-image: url("../assets/svg/m_spike.svg");
 }
 @-moz-keyframes walking {
   0% {
