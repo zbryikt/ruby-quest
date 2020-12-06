@@ -1,4 +1,4 @@
-var cp, stage, s;
+var cp, stage, s, args;
 cp = function(it){
   return JSON.parse(JSON.stringify(it));
 };
@@ -654,14 +654,26 @@ stage.prototype = import$(Object.create(Object.prototype), {
     return this.render();
   },
   load: function(arg$){
-    var lv, path, mode, map, this$ = this;
-    lv = arg$.lv, path = arg$.path, mode = arg$.mode;
-    if (!(map = this.mapset.list[lv])) {
-      return this.ldcv.finish.toggle(true);
-    }
-    path = "/assets/map/" + this.mapset.id + "/" + map.fn + ".json";
-    return ld$.fetch(path, {}, {
-      type: 'text'
+    var lv, path, mode, mapset, p, this$ = this;
+    lv = arg$.lv, path = arg$.path, mode = arg$.mode, mapset = arg$.mapset;
+    p = mapset
+      ? ld$.fetch("/assets/map/" + mapset + "/index.json", {
+        method: 'GET'
+      }, {
+        type: 'json'
+      }).then(function(it){
+        return this$.mapset = it;
+      })
+      : Promise.resolve();
+    return p.then(function(){
+      var map, path;
+      if (!(map = this$.mapset.list[lv])) {
+        return this$.ldcv.finish.toggle(true);
+      }
+      path = "/assets/map/" + this$.mapset.id + "/" + map.fn + ".json";
+      return ld$.fetch(path, {}, {
+        type: 'text'
+      });
     }).then(function(ret){
       var e;
       try {
@@ -903,6 +915,20 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
+args = {};
+(window.location.search || "").substring(1).split('&').map(function(it){
+  var ref$, n, v;
+  ref$ = it.split('=').map(function(it){
+    return decodeURIComponent(it);
+  }), n = ref$[0], v = ref$[1];
+  return args[n] = v;
+});
+if (args.mapset) {
+  s.load({
+    mapset: args.mapset,
+    lv: args.lv || 0
+  });
+}
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];

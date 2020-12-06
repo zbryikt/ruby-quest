@@ -268,10 +268,16 @@ stage.prototype = Object.create(Object.prototype) <<< do
     @prepare!
     @render!
 
-  load: ({lv, path, mode}) ->
-    if !(map = @mapset.list[lv]) => return @ldcv.finish.toggle true
-    path = "/assets/map/#{@mapset.id}/#{map.fn}.json"
-    ld$.fetch path, {}, {type: \text}
+  load: ({lv, path, mode, mapset}) ->
+    p = if mapset =>
+      ld$.fetch "/assets/map/#mapset/index.json", {method: \GET}, {type: \json}
+        .then ~> @mapset = it
+    else Promise.resolve!
+    p
+      .then ~>
+        if !(map = @mapset.list[lv]) => return @ldcv.finish.toggle true
+        path = "/assets/map/#{@mapset.id}/#{map.fn}.json"
+        ld$.fetch path, {}, {type: \text}
       .then (ret) ~>
         try
           @data = JSON.parse(ret)
@@ -413,5 +419,10 @@ stage.prototype.firekey = (t) ->
 
 s = new stage!
 s.init!
-#s.load {lv: 17, path: (-> "/assets/map/tommy/#it.json")}
+#s.load {lv: 7, mapset: 'tommy'}
 #s.edit!
+args = {}
+(window.location.search or "").substring(1).split('&').map ->
+  [n,v] = it.split('=').map -> decodeURIComponent(it)
+  args[n] = v
+if args.mapset => s.load {mapset: args.mapset, lv: args.lv or 0}
