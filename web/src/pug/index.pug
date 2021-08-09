@@ -3,6 +3,8 @@ block vars
   - assets = function(path) { return "assets/pack/devil-workshop/3D/png/" + path; }
 block head
   style(type="text/css"): :stylus
+    html,body
+      overscroll-behavior-y: contain
     body
       background: #212529
       /*background: url(/assets/img/cloud.svg) center center*/
@@ -22,10 +24,15 @@ block body
   .tile.d-none(ld="sample-tile") #[.b]#[.e]#[.t]#[.s]
   .w-100.h-100(ld="screen",data-name="play edit")
     .w-100.h-100.d-flex.justify-content-center.align-items-center.flex-column
-      .scene(ld="scene")
-        .field(ld="field")
-        .user(ld="user")
-        .cursor(ld="cursor")
+      .d-flex.justify-content-between.w-100.align-items-center
+        .bg-dark.text-light.p-3.rounded-circle.shadow.clickable(ld="gamepad",
+        style="width:8em;height:8em;margin-left:3em")
+        .scene(ld="scene")
+          .field(ld="field")
+          .user(ld="user")
+          .cursor(ld="cursor")
+        .bg-dark.text-light.p-3.rounded-circle.shadow.clickable(ld="gamepad",
+        style="width:8em;height:8em;margin-right:3em;visibility:hidden")
       div(ld="on-mode",data-mode="play"): .d-flex
         .info.py-2.pl-3.pr-4.text-sm.rounded.bg-dark.text-light.shadow.d-flex.align-items-center: div
           .d-flex

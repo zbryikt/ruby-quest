@@ -216,7 +216,27 @@ stage.prototype = import$(Object.create(Object.prototype), {
     }
   },
   init: function(){
-    var view, this$ = this;
+    var touchMove, view, this$ = this;
+    touchMove = function(arg$){
+      var node, evt, box, ref$, x, y, dir, u;
+      node = arg$.node, evt = arg$.evt;
+      box = node.getBoundingClientRect();
+      ref$ = [evt.touches[0].pageX, evt.touches[0].pageY], x = ref$[0], y = ref$[1];
+      x = (x - box.x) / box.width;
+      y = (y - box.y) / box.height;
+      dir = Math.abs(x - 0.5) > Math.abs(y - 0.5)
+        ? x > 0.5 ? 2 : 0
+        : y > 0.5 ? 3 : 1;
+      u = this$.user;
+      if (u.dir !== dir || !u.moving) {
+        u.lastMoveTime = null;
+      }
+      u.dir = dir;
+      u.moving = true;
+      this$.el.user.style.backgroundPositionY = -stage.dim.size * 1.4964 * [2, 1, 3, 0][dir] + "px";
+      evt.preventDefault();
+      return node.textContent = "";
+    };
     this.ldld = new ldLoader({
       'class': 'ldld full'
     });
@@ -292,6 +312,39 @@ stage.prototype = import$(Object.create(Object.prototype), {
         }
       },
       action: {
+        touchstart: {
+          gamepad: function(arg$){
+            var node, evt;
+            node = arg$.node, evt = arg$.evt;
+            if (this$.snd.bgm.paused && this$.mode === 'play') {
+              this$.sndPlay('bgm', {
+                loop: true
+              });
+            }
+            return touchMove({
+              node: node,
+              evt: evt
+            });
+          }
+        },
+        touchmove: {
+          gamepad: function(arg$){
+            var node, evt;
+            node = arg$.node, evt = arg$.evt;
+            return touchMove({
+              node: node,
+              evt: evt
+            });
+          }
+        },
+        touchend: {
+          gamepad: function(arg$){
+            var node, evt;
+            node = arg$.node, evt = arg$.evt;
+            this$.user.moving = false;
+            return evt.preventDefault();
+          }
+        },
         click: {
           start: function(){
             var mapsetName;

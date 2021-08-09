@@ -71,6 +71,22 @@ stage.prototype = Object.create(Object.prototype) <<< do
       @render!
 
   init: ->
+    touch-move = ({node, evt}) ~>
+      box = node.getBoundingClientRect!
+      [x, y] = [evt.touches.0.pageX, evt.touches.0.pageY]
+      x = (x - box.x) / box.width
+      y = (y - box.y) / box.height
+      dir = if Math.abs(x - 0.5) > Math.abs(y - 0.5) =>
+        if x > 0.5 => 2 else 0
+      else
+        if y > 0.5 => 3 else 1
+      u = @user
+      if u.dir != dir or !u.moving => u.last-move-time = null
+      u <<< dir: dir, moving: true
+      @el.user.style.backgroundPositionY = "#{-stage.dim.size * 1.4964 * ([2 1 3 0][dir])}px"
+      evt.preventDefault!
+      node.textContent = ""
+
     @ldld = new ldLoader class: 'ldld full'
     @ldld.on!
     @view = view = new ldView do
@@ -102,44 +118,55 @@ stage.prototype = Object.create(Object.prototype) <<< do
           n = node.getAttribute(\data-name).split(' ')
           node.classList.toggle \d-none, !(@mode in n)
 
-      action: click:
-        start: ~>
-          @set-mode \play
-          mapset-name = view.get('selected-mapset').value
-          ld$.fetch "assets/map/#mapset-name/index.json", {method: \GET}, {type: \json}
-            .then ~>
-              @mapset = it
-              @load {lv: 0}
-        "go-edit": ~> @set-mode \edit
-        "test-run": ~>
-          @edit-data = cp @data
-          @set-mode \play
-        "download": ~>
-          href = URL.createObjectURL(new Blob([JSON.stringify(@data)], {type: \application/json}))
-          n = ld$.create name: \a, attr: {href,download: 'result.json'}
-          document.body.appendChild n
-          n.click!
-          document.body.removeChild n
-        restart: ~> @restart!
-        reset: ~>
-          @ldcv.finish.toggle false
-          @reset!
-        ext: ({node}) ~>
-          type = +node.getAttribute(\data-type)
-          if type == 0 => @tiles.map -> it.map -> it.splice(0,0,cp it[0])
-          if type == 1 => @tiles.map -> it.splice(0,0,cp it[0])
-          if type == 2 => @tiles.map -> it.map -> it.splice(it.length,0,cp it[* - 1])
-          if type == 3 => @tiles.map -> it.splice(it.length,0,cp it[* - 1])
-          if type == 4 => @tiles.map -> it.map -> it.splice 0, 1
-          if type == 5 => @tiles.map -> it.splice 0, 1
-          if type == 6 => @tiles.map -> it.map -> it.splice it.length - 1, 1
-          if type == 7 => @tiles.map -> it.splice it.length - 1, 1
-          if type == 8 => @tiles.splice @tiles.length, 0, (@tiles[* - 1].map -> it.map -> \a)
-          if type == 9 => @tiles.splice 0, 0, cp @tiles[0]
-          if type == 10 and @tiles.length > 1 => @tiles.splice @tiles.length - 1, 1
-          if type == 11 and @tiles.length > 1 => @tiles.splice 0, 1
-          @prepare!
-          @render!
+      action:
+        touchstart:
+          gamepad: ({node, evt}) ~>
+            if @snd.bgm.paused and @mode == \play => @snd-play \bgm, {loop: true}
+            touch-move {node, evt}
+        touchmove:
+          gamepad: ({node, evt}) ~> touch-move {node, evt}
+        touchend:
+          gamepad: ({node, evt}) ~>
+            @user.moving = false
+            evt.preventDefault!
+        click:
+          start: ~>
+            @set-mode \play
+            mapset-name = view.get('selected-mapset').value
+            ld$.fetch "assets/map/#mapset-name/index.json", {method: \GET}, {type: \json}
+              .then ~>
+                @mapset = it
+                @load {lv: 0}
+          "go-edit": ~> @set-mode \edit
+          "test-run": ~>
+            @edit-data = cp @data
+            @set-mode \play
+          "download": ~>
+            href = URL.createObjectURL(new Blob([JSON.stringify(@data)], {type: \application/json}))
+            n = ld$.create name: \a, attr: {href,download: 'result.json'}
+            document.body.appendChild n
+            n.click!
+            document.body.removeChild n
+          restart: ~> @restart!
+          reset: ~>
+            @ldcv.finish.toggle false
+            @reset!
+          ext: ({node}) ~>
+            type = +node.getAttribute(\data-type)
+            if type == 0 => @tiles.map -> it.map -> it.splice(0,0,cp it[0])
+            if type == 1 => @tiles.map -> it.splice(0,0,cp it[0])
+            if type == 2 => @tiles.map -> it.map -> it.splice(it.length,0,cp it[* - 1])
+            if type == 3 => @tiles.map -> it.splice(it.length,0,cp it[* - 1])
+            if type == 4 => @tiles.map -> it.map -> it.splice 0, 1
+            if type == 5 => @tiles.map -> it.splice 0, 1
+            if type == 6 => @tiles.map -> it.map -> it.splice it.length - 1, 1
+            if type == 7 => @tiles.map -> it.splice it.length - 1, 1
+            if type == 8 => @tiles.splice @tiles.length, 0, (@tiles[* - 1].map -> it.map -> \a)
+            if type == 9 => @tiles.splice 0, 0, cp @tiles[0]
+            if type == 10 and @tiles.length > 1 => @tiles.splice @tiles.length - 1, 1
+            if type == 11 and @tiles.length > 1 => @tiles.splice 0, 1
+            @prepare!
+            @render!
 
 
     @el = do
