@@ -447,6 +447,7 @@ stage.prototype.firekey = (t) ->
 s = new stage!
 s.init!
 #s.load {lv: 7, mapset: 'tommy'}
+s.load {lv: 9, mapset: 'basic'}
 #s.edit!
 args = {}
 (window.location.search or "").substring(1).split('&').map ->

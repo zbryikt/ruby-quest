@@ -968,6 +968,10 @@ stage.prototype.firekey = function(t){
 };
 s = new stage();
 s.init();
+s.load({
+  lv: 9,
+  mapset: 'basic'
+});
 args = {};
 (window.location.search || "").substring(1).split('&').map(function(it){
   var ref$, n, v;
