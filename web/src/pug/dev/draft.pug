@@ -1,156 +1,157 @@
 //- module
-extends /base.pug
-block vars
-  - assets = function(path) { return "assets/pack/devil-workshop/3D/png/" + path; }
-block head
-  style(type="text/css"): :stylus
-    .tile
-      position: relative
-      width: 32px
-      height: 32px
-    .tile > div
-      position: absolute
-      top: 0
-      left: 0
-      background-size: 64px 64px
-      background-position: 0px 0px
-      background-repeat: no-repeat
-      width: 32px
-      height: 32px
-    .tile
-      .t
+//-
+  extends /base.pug
+  block vars
+    - assets = function(path) { return "assets/pack/devil-workshop/3D/png/" + path; }
+  block head
+    style(type="text/css"): :stylus
+      .tile
+        position: relative
+        width: 32px
+        height: 32px
+      .tile > div
+        position: absolute
         top: 0
-        background-position: -32px -32px
-      .b
-        top: 8px
-        background-position: -32px -32px
-      .v
-        height: 24px
-        top: 32px
-    .tile.wall
-      .b, .t, .v
-        background-image: url(/assets/tile/wallStoneA.png)
-    .tile.bedrock
-      .b
-        background-image: url(/assets/tile/trapdoorMetal.png)
-        top:24px
-        background-position: 0 0
-
-    .tile.ground
-      .b, .t, .v
-        background-image: url(/assets/tile/wallEarthA.png)
-      .b
-        background-position: -32px 0px
-      .v
-        top: 40px
-        height: 16px
-        background-position: 0 0
-    .tile.stool > div
-      background-size: 128px 128px
-    .tile.stool
-      .b, .t, .v
-        background-image: url(/assets/tile/boxA.png)
-      .v
-        background-position: -32px 0px
-      .t, .b
-        background-position: -32px -16px
-      .v
-        height: 24px
-        background-position: -32px -48px
-    @keyframes char
-      0%
+        left: 0
+        background-size: 64px 64px
         background-position: 0px 0px
-      10%
-        background-position: -32px 0px
-      20%
-        background-position: -64px 0px
-      30%
-        background-position: -96px 0px
-      40%
-        background-position: -128px 0px
-      50%
-        background-position: -160px 0px
-      60%
-        background-position: -192px 0px
-      70%
-        background-position: -224px 0px
-      80%
-        background-position: -224px 0px
-      90%
-        background-position: -256px 0px
-      100%
-        background-position: -288px 0px
-      
-    .char
-      width: 32px
-      height: 32px
-      background-image: url(/assets/char/vita.png)
-      background-size: 768px 32px
-      animation: char 1s infinite steps(1,end)
-      transition: left .05s linear, top .05s linear
+        background-repeat: no-repeat
+        width: 32px
+        height: 32px
+      .tile
+        .t
+          top: 0
+          background-position: -32px -32px
+        .b
+          top: 8px
+          background-position: -32px -32px
+        .v
+          height: 24px
+          top: 32px
+      .tile.wall
+        .b, .t, .v
+          background-image: url(/assets/tile/wallStoneA.png)
+      .tile.bedrock
+        .b
+          background-image: url(/assets/tile/trapdoorMetal.png)
+          top:24px
+          background-position: 0 0
 
-      z-index: 10
-      position: absolute
+      .tile.ground
+        .b, .t, .v
+          background-image: url(/assets/tile/wallEarthA.png)
+        .b
+          background-position: -32px 0px
+        .v
+          top: 40px
+          height: 16px
+          background-position: 0 0
+      .tile.stool > div
+        background-size: 128px 128px
+      .tile.stool
+        .b, .t, .v
+          background-image: url(/assets/tile/boxA.png)
+        .v
+          background-position: -32px 0px
+        .t, .b
+          background-position: -32px -16px
+        .v
+          height: 24px
+          background-position: -32px -48px
+      @keyframes char
+        0%
+          background-position: 0px 0px
+        10%
+          background-position: -32px 0px
+        20%
+          background-position: -64px 0px
+        30%
+          background-position: -96px 0px
+        40%
+          background-position: -128px 0px
+        50%
+          background-position: -160px 0px
+        60%
+          background-position: -192px 0px
+        70%
+          background-position: -224px 0px
+        80%
+          background-position: -224px 0px
+        90%
+          background-position: -256px 0px
+        100%
+          background-position: -288px 0px
+        
+      .char
+        width: 32px
+        height: 32px
+        background-image: url(/assets/char/vita.png)
+        background-size: 768px 32px
+        animation: char 1s infinite steps(1,end)
+        transition: left .05s linear, top .05s linear
 
-block body
-  div(style="width:512px;height:512px")
-    each j in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-      .d-flex(style=`position:absolute;width:512px;top:${j*32 - 32}px;left:0`)
-        each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-          if (j == 1 || j == 16) || (i ==1 || i == 16)
-            .tile.wall #[.b]#[.t]#[.v]
-          else if (j == 8)
-            .tile.bedrock #[.b]
-          else if Math.random() < 0.3
-            .tile.stool #[.b]#[.t]#[.v]
-          else
-            .tile.ground #[.b]#[.v]
-    #cc.char
-  script: :lsc
-    ch = {x: 0, y: 0} 
-    len = {w: 5, h: 5, l: 3}
+        z-index: 10
+        position: absolute
 
-    tile = [
+  block body
+    div(style="width:512px;height:512px")
+      each j in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+        .d-flex(style=`position:absolute;width:512px;top:${j*32 - 32}px;left:0`)
+          each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+            if (j == 1 || j == 16) || (i ==1 || i == 16)
+              .tile.wall #[.b]#[.t]#[.v]
+            else if (j == 8)
+              .tile.bedrock #[.b]
+            else if Math.random() < 0.3
+              .tile.stool #[.b]#[.t]#[.v]
+            else
+              .tile.ground #[.b]#[.v]
+      #cc.char
+    script: :lsc
+      ch = {x: 0, y: 0} 
+      len = {w: 5, h: 5, l: 3}
 
-      [
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
+      tile = [
+
+        [
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+        ]
+
+        [
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+        ]
+
+        [
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+          [0,0,0,0,0]
+        ]
+
       ]
-
-      [
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-      ]
-
-      [
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-        [0,0,0,0,0]
-      ]
-
-    ]
-    render = ->
-    for lv from 0 til len.l => 
-    for i from 0 til 
-    document.addEventListener \keyup, (e) ->
-      if e.which < 37 and e.which > 40 => return
-      switch e.which
-      | 37
-        ch.x -= 1
-      | 38
-        ch.y -= 1
-      | 39
-        ch.x += 1
-      | 40
-        ch.y += 1
-      cc.style <<< do
-        left: "#{ch.x * 32}px"
-        top: "#{ch.y * 32}px"
+      render = ->
+      for lv from 0 til len.l => 
+      for i from 0 til 
+      document.addEventListener \keyup, (e) ->
+        if e.which < 37 and e.which > 40 => return
+        switch e.which
+        | 37
+          ch.x -= 1
+        | 38
+          ch.y -= 1
+        | 39
+          ch.x += 1
+        | 40
+          ch.y += 1
+        cc.style <<< do
+          left: "#{ch.x * 32}px"
+          top: "#{ch.y * 32}px"
