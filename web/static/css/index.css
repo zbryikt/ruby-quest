@@ -19,7 +19,7 @@ body {
   height: 44px;
   transition: left 0.16s linear, top 0.16s linear;
   border-radius: 9px;
-  background: url("https://i.pinimg.com/564x/7d/59/5a/7d595a64c99a634d94759de8096cca14.jpg");
+  background: url("../assets/img/phoebe-cat.png");
   background-size: 128px 191.5392px;
   animation: walking 1s infinite steps(1, end);
 }
